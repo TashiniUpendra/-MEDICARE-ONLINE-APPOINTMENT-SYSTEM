@@ -1,12 +1,10 @@
 <?php
-// Title page – PHP (simple & safe)
 session_start();
 
 $projectTitle = "MediCare Online Appointment System";
 $course = "Diploma in Software Engineering";
 $subject = "Developing Modern Web Applications";
 
-// Optional student name (if logged in)
 $studentName = $_SESSION["name"] ?? "Your Name";
 $institute = "Your Institute Name";
 $date = date("Y");
