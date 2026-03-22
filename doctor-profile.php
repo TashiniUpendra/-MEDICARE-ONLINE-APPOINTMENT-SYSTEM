@@ -130,7 +130,7 @@ td, th {
 
     <!-- Profile -->
     <div class="box profile">
-        <img src="<?= htmlspecialchars($doctor['image']); ?>" alt="Doctor Image">
+        <img src="<?= htmlspecialchars($doctor['image']); ?>" alt="https://i.pinimg.com/736x/16/96/71/169671343ef815d20808e6c9e43c5c19.jpg">
 
         <div>
             <h2><?= htmlspecialchars($doctor['name']); ?></h2>
