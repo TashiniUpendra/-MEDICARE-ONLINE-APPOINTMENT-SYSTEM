@@ -1,21 +1,13 @@
 <?php
 session_start();
 
-/* Optional: Only patient can view */
-/*
-if (!isset($_SESSION["role"]) || $_SESSION["role"] !== "patient") {
-    header("Location: login.php");
-    exit();
-}
-*/
-
-/* Demo doctor data (later DB connect karanna puluwan) */
+/* Doctor Data */
 $doctors = [
     1 => [
         "name" => "Dr. John Silva",
         "specialty" => "Cardiologist",
         "experience" => "12 Years Experience",
-        "image" => "https://via.placeholder.com/140",
+        "image" => "images/doctor1.jpg", // 🔥 local image
         "schedule" => [
             ["day" => "Monday", "time" => "9:00 AM - 2:00 PM"],
             ["day" => "Tuesday", "time" => "10:00 AM - 4:00 PM"],
@@ -30,7 +22,7 @@ $doctors = [
         "name" => "Dr. Maya Fernando",
         "specialty" => "Dermatologist",
         "experience" => "8 Years Experience",
-        "image" => "https://via.placeholder.com/140",
+        "image" => "images/doctor2.jpg",
         "schedule" => [
             ["day" => "Monday", "time" => "10:00 AM - 1:00 PM"],
             ["day" => "Tuesday", "time" => "Holiday"],
@@ -43,11 +35,11 @@ $doctors = [
     ]
 ];
 
-/* Get doctor ID from URL */
-$id = isset($_GET["id"]) ? (int)$_GET["id"] : 1;
+/* Get doctor ID */
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 1;
 
-/* Validate ID */
-if (!isset($doctors[$id])) {
+/* Validate */
+if (!array_key_exists($id, $doctors)) {
     $id = 1;
 }
 
@@ -55,135 +47,101 @@ $doctor = $doctors[$id];
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MediCare | Doctor Profile</title>
+<title>Doctor Profile</title>
 
 <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Poppins", sans-serif;
-}
-
 body {
-    background: #f0faff;
+    background:#f0faff;
+    font-family: Arial;
 }
 
-/* Header */
-header {
-    background: #0b78a6;
-    color: white;
-    text-align: center;
-    padding: 18px;
-    font-size: 22px;
-}
-
-/* Container */
 .container {
-    width: 90%;
-    max-width: 900px;
-    margin: 30px auto;
+    width:90%;
+    max-width:900px;
+    margin:30px auto;
 }
 
-/* Profile Box */
-.profile-box {
-    background: white;
-    padding: 25px;
-    border-radius: 12px;
-    display: flex;
-    gap: 20px;
-    align-items: center;
-    box-shadow: 0 4px 18px rgba(0,0,0,0.1);
+.box {
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 4px 15px rgba(0,0,0,0.1);
 }
 
-.profile-box img {
-    width: 140px;
-    height: 140px;
-    border-radius: 50%;
-    border: 4px solid #0b78a6;
+/* Profile */
+.profile {
+    display:flex;
+    gap:20px;
+    align-items:center;
 }
 
-/* Info */
-.info h2 {
-    color: #0b78a6;
+.profile img {
+    width:140px;
+    height:140px;
+    border-radius:50%;
+    object-fit:cover;
+    border:4px solid #0b78a6;
 }
 
-.info p {
-    margin: 6px 0;
-}
-
-/* Schedule */
-.schedule-box {
-    margin-top: 25px;
-    background: white;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 4px 18px rgba(0,0,0,0.1);
-}
-
-.schedule-box h3 {
-    color: #0b78a6;
-    margin-bottom: 15px;
+h2 {
+    color:#0b78a6;
 }
 
 /* Table */
 table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-th, td {
-    padding: 12px;
-    text-align: center;
-    border-bottom: 1px solid #ddd;
+    width:100%;
+    margin-top:15px;
+    border-collapse:collapse;
 }
 
 th {
-    background: #0b78a6;
-    color: white;
+    background:#0b78a6;
+    color:white;
+}
+
+td, th {
+    padding:10px;
+    text-align:center;
+    border-bottom:1px solid #ddd;
 }
 
 /* Button */
 .btn {
-    display: inline-block;
-    margin-top: 20px;
-    background: #0b78a6;
-    color: white;
-    padding: 10px 16px;
-    border-radius: 6px;
-    text-decoration: none;
+    background:#0b78a6;
+    color:white;
+    padding:10px 15px;
+    display:inline-block;
+    margin-top:15px;
+    text-decoration:none;
+    border-radius:6px;
 }
 
 .btn:hover {
-    background: #095c80;
+    background:#095c80;
 }
 </style>
 </head>
 
 <body>
 
-<header>MediCare | Doctor Profile</header>
-
 <div class="container">
 
-    <!-- Doctor Profile -->
-    <div class="profile-box">
-        <img src="<?php echo htmlspecialchars($doctor["image"]); ?>" alt="Doctor">
+    <!-- Profile -->
+    <div class="box profile">
+        <img src="<?= htmlspecialchars($doctor['image']); ?>" alt="Doctor Image">
 
-        <div class="info">
-            <h2><?php echo htmlspecialchars($doctor["name"]); ?></h2>
-            <p><strong>Specialty:</strong> <?php echo htmlspecialchars($doctor["specialty"]); ?></p>
-            <p><strong>Experience:</strong> <?php echo htmlspecialchars($doctor["experience"]); ?></p>
-            <p><strong>Qualifications:</strong> MBBS, MD</p>
+        <div>
+            <h2><?= htmlspecialchars($doctor['name']); ?></h2>
+            <p><b>Specialty:</b> <?= htmlspecialchars($doctor['specialty']); ?></p>
+            <p><b>Experience:</b> <?= htmlspecialchars($doctor['experience']); ?></p>
+            <p><b>Qualifications:</b> MBBS, MD</p>
         </div>
     </div>
 
     <!-- Schedule -->
-    <div class="schedule-box">
+    <div class="box" style="margin-top:20px;">
         <h3>Weekly Schedule</h3>
 
         <table>
@@ -192,16 +150,16 @@ th {
                 <th>Available Time</th>
             </tr>
 
-            <?php foreach ($doctor["schedule"] as $s): ?>
-                <tr>
-                    <td><?php echo htmlspecialchars($s["day"]); ?></td>
-                    <td><?php echo htmlspecialchars($s["time"]); ?></td>
-                </tr>
+            <?php foreach ($doctor['schedule'] as $s): ?>
+            <tr>
+                <td><?= htmlspecialchars($s['day']); ?></td>
+                <td><?= htmlspecialchars($s['time']); ?></td>
+            </tr>
             <?php endforeach; ?>
         </table>
 
         <a class="btn"
-           href="appointment-booking.php?doctor=<?php echo urlencode($doctor['name']); ?>">
+           href="appointment-booking.php?doctor=<?= urlencode($doctor['name']); ?>">
            Book Appointment
         </a>
     </div>
