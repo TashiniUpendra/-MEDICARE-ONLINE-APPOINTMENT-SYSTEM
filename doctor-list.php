@@ -1,10 +1,7 @@
 <?php
 session_start();
 
-/*
-  OPTIONAL ACCESS CONTROL
-  Uncomment this block if you want ONLY logged-in patients to see doctors
-*/
+/* Optional: Only patient can view */
 /*
 if (!isset($_SESSION["role"]) || $_SESSION["role"] !== "patient") {
     header("Location: login.php");
@@ -12,133 +9,134 @@ if (!isset($_SESSION["role"]) || $_SESSION["role"] !== "patient") {
 }
 */
 
-/* Demo doctor data (later replace with database) */
+/* Demo Doctor Data (later DB connect karamu) */
 $doctors = [
     [
+        "id" => 1,
         "name" => "Dr. John Silva",
         "specialty" => "Cardiologist",
         "experience" => "12 Years Experience",
-        "image" => "https://via.placeholder.com/110"
+        "image" => "https://www.shutterstock.com/image-photo/portrait-handsome-hispanic-male-doctor-600nw-2608441611.jpg"
     ],
     [
+        "id" => 2,
         "name" => "Dr. Maya Fernando",
         "specialty" => "Dermatologist",
         "experience" => "8 Years Experience",
-        "image" => "https://via.placeholder.com/110"
+        "image" => "https://www.shutterstock.com/image-photo/portrait-handsome-hispanic-male-doctor-600nw-2608441611.jpg"
     ],
     [
+        "id" => 3,
         "name" => "Dr. Ruwan Perera",
         "specialty" => "Neurologist",
         "experience" => "15 Years Experience",
-        "image" => "https://via.placeholder.com/110"
+        "image" => "https://www.shutterstock.com/image-photo/portrait-handsome-hispanic-male-doctor-600nw-2608441611.jpg"
     ],
     [
+        "id" => 4,
         "name" => "Dr. Nadeesha Karun",
         "specialty" => "Pediatrician",
         "experience" => "10 Years Experience",
-        "image" => "https://via.placeholder.com/110"
+        "image" => "https://www.shutterstock.com/image-photo/portrait-handsome-hispanic-male-doctor-600nw-2608441611.jpg"
     ]
 ];
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MediCare | Doctor List</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MediCare | Doctor List</title>
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Poppins", sans-serif;
-        }
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
 
-        body {
-            background: #f0faff;
-        }
+body {
+    background: #f0faff;
+}
 
-        header {
-            background: #0b78a6;
-            padding: 18px;
-            text-align: center;
-            color: white;
-            font-size: 22px;
-            font-weight: bold;
-        }
+header {
+    background: #0b78a6;
+    padding: 18px;
+    text-align: center;
+    color: white;
+    font-size: 22px;
+}
 
-        .container {
-            width: 90%;
-            margin: 40px auto;
-        }
+.container {
+    width: 90%;
+    margin: 30px auto;
+}
 
-        .doctor-card {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 18px rgba(0,0,0,0.12);
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
 
-        .doctor-card img {
-            width: 110px;
-            height: 110px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #0b78a6;
-        }
+.card img {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    border: 3px solid #0b78a6;
+    object-fit: cover;
+}
 
-        .doctor-info {
-            flex: 1;
-        }
+.info {
+    flex: 1;
+}
 
-        .doctor-info h3 {
-            font-size: 22px;
-            color: #0b78a6;
-        }
+.info h3 {
+    color: #0b78a6;
+}
 
-        .doctor-info p {
-            margin-top: 6px;
-            color: #444;
-        }
+.btn {
+    background: #0b78a6;
+    color: white;
+    padding: 10px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+}
 
-        .btn {
-            background: #0b78a6;
-            color: white;
-            padding: 10px 14px;
-            border-radius: 6px;
-            font-size: 15px;
-            text-decoration: none;
-        }
-
-        .btn:hover {
-            background: #095c80;
-        }
-    </style>
+.btn:hover {
+    background: #095c80;
+}
+</style>
 </head>
+
 <body>
 
 <header>MediCare | Doctor List</header>
 
 <div class="container">
 
-    <?php foreach ($doctors as $doc): ?>
-        <div class="doctor-card">
-            <img src="<?php echo htmlspecialchars($doc["image"]); ?>" alt="Doctor Image">
+<?php foreach ($doctors as $doc): ?>
+    <div class="card">
+        <img src="<?php echo htmlspecialchars($doc["image"]); ?>" alt="Doctor">
 
-            <div class="doctor-info">
-                <h3><?php echo htmlspecialchars($doc["name"]); ?></h3>
-                <p><strong>Specialty:</strong> <?php echo htmlspecialchars($doc["specialty"]); ?></p>
-                <p><strong>Experience:</strong> <?php echo htmlspecialchars($doc["experience"]); ?></p>
-            </div>
-
-            <a href="appointment-booking.php" class="btn">Book Appointment</a>
+        <div class="info">
+            <h3><?php echo htmlspecialchars($doc["name"]); ?></h3>
+            <p><strong>Specialty:</strong> <?php echo htmlspecialchars($doc["specialty"]); ?></p>
+            <p><strong>Experience:</strong> <?php echo htmlspecialchars($doc["experience"]); ?></p>
         </div>
-    <?php endforeach; ?>
+
+        <!-- View Profile Button -->
+        <a class="btn" href="doctor-profile.php?id=<?php echo $doc["id"]; ?>">
+            View Profile
+        </a>
+    </div>
+<?php endforeach; ?>
 
 </div>
 
