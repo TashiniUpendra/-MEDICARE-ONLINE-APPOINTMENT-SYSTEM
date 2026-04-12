@@ -1,123 +1,126 @@
 <?php
 session_start();
 
-/* Patient-only access */
+/* Only patient can access */
 if (!isset($_SESSION["role"]) || $_SESSION["role"] !== "patient") {
     header("Location: login.php");
     exit();
 }
 
-$patientName = $_SESSION["name"] ?? "Patient";
+/* Get patient name safely */
+$patientName = isset($_SESSION["name"]) ? $_SESSION["name"] : "Patient";
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MediCare | Patient Dashboard</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MediCare | Patient Dashboard</title>
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Poppins", sans-serif;
-        }
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
 
-        body {
-            background: #f0faff;
-        }
+body {
+    background: #f0faff;
+}
 
-        header {
-            background: #0b78a6;
-            color: white;
-            padding: 18px;
-            text-align: center;
-            font-size: 22px;
-            font-weight: bold;
-        }
+header {
+    background: #0b78a6;
+    color: white;
+    padding: 18px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+}
 
-        .container {
-            width: 90%;
-            margin: 30px auto;
-        }
+.container {
+    width: 90%;
+    margin: 30px auto;
+}
 
-        .welcome {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 18px rgba(0,0,0,0.12);
-            margin-bottom: 25px;
-        }
+.welcome {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.12);
+    margin-bottom: 25px;
+}
 
-        .welcome h2 {
-            color: #0b78a6;
-        }
+.welcome h2 {
+    color: #0b78a6;
+}
 
-        .cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
-        }
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
 
-        .card {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 18px rgba(0,0,0,0.12);
-            text-align: center;
-            transition: 0.3s;
-        }
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.12);
+    text-align: center;
+    transition: 0.3s;
+}
 
-        .card:hover {
-            transform: translateY(-6px);
-        }
+.card:hover {
+    transform: translateY(-6px);
+}
 
-        .card h3 {
-            color: #0b78a6;
-            margin-bottom: 10px;
-        }
+.card h3 {
+    color: #0b78a6;
+    margin-bottom: 10px;
+}
 
-        .card p {
-            color: #444;
-            margin-bottom: 15px;
-        }
+.card p {
+    color: #444;
+    margin-bottom: 15px;
+}
 
-        .btn {
-            background: #0b78a6;
-            color: white;
-            padding: 10px 16px;
-            text-decoration: none;
-            border-radius: 6px;
-            display: inline-block;
-        }
+.btn {
+    background: #0b78a6;
+    color: white;
+    padding: 10px 16px;
+    text-decoration: none;
+    border-radius: 6px;
+    display: inline-block;
+}
 
-        .btn:hover {
-            background: #095c80;
-        }
+.btn:hover {
+    background: #095c80;
+}
 
-        footer {
-            margin-top: 40px;
-            background: #0b78a6;
-            color: white;
-            text-align: center;
-            padding: 12px;
-        }
-    </style>
+footer {
+    margin-top: 40px;
+    background: #0b78a6;
+    color: white;
+    text-align: center;
+    padding: 12px;
+}
+</style>
 </head>
+
 <body>
 
 <header>MediCare | Patient Dashboard</header>
 
 <div class="container">
 
-    <!-- Welcome Section -->
+    <!-- Welcome -->
     <div class="welcome">
         <h2>Welcome, <?php echo htmlspecialchars($patientName); ?> 👋</h2>
         <p>Manage your appointments and view your medical schedule easily.</p>
     </div>
 
-    <!-- Dashboard Cards -->
+    <!-- Cards -->
     <div class="cards">
 
         <div class="card">
