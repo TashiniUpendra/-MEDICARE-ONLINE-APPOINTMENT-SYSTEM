@@ -12,140 +12,140 @@ $adminName = $_SESSION["name"] ?? "Admin";
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>MediCare | Admin Dashboard</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MediCare | Admin Dashboard</title>
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Poppins", sans-serif;
-        }
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Poppins", sans-serif;
+}
 
-        body {
-            background: #f4f9fc;
-        }
+body{
+    background:#eef6fb;
+}
 
-        header {
-            background: #0b78a6;
-            color: white;
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+/* HEADER */
+header{
+    background:#0b78a6;
+    color:white;
+    padding:15px 25px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
 
-        header h1 {
-            font-size: 22px;
-        }
+header h1{
+    font-size:22px;
+}
 
-        header .right {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
+.right{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
 
-        header .admin-name {
-            font-weight: 600;
-            font-size: 14px;
-            opacity: 0.95;
-        }
+.logout-btn{
+    background:white;
+    color:#0b78a6;
+    padding:8px 14px;
+    border-radius:6px;
+    text-decoration:none;
+    font-weight:bold;
+}
 
-        header a.logout-btn {
-            background: white;
-            color: #0b78a6;
-            text-decoration: none;
-            padding: 8px 14px;
-            border-radius: 6px;
-            font-weight: bold;
-            display: inline-block;
-        }
+.logout-btn:hover{
+    background:#e6f4fb;
+}
 
-        header a.logout-btn:hover {
-            background: #e6f4fb;
-        }
+/* DASHBOARD */
+.dashboard{
+    padding:30px;
+}
 
-        .dashboard {
-            padding: 30px;
-        }
+/* CARDS */
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+    margin-bottom:30px;
+}
 
-        .cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
+.card{
+    background:white;
+    padding:25px;
+    border-radius:12px;
+    text-align:center;
+    box-shadow:0 4px 12px rgba(0,0,0,0.1);
+    transition:0.3s;
+}
 
-        .card {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            text-align: center;
-        }
+.card:hover{
+    transform:translateY(-5px);
+}
 
-        .card h2 {
-            color: #0b78a6;
-            font-size: 28px;
-            margin-bottom: 10px;
-        }
+.card h2{
+    color:#0b78a6;
+    font-size:30px;
+}
 
-        .card p {
-            font-weight: 600;
-            color: #444;
-        }
+.card p{
+    margin-top:10px;
+    font-weight:600;
+}
 
-        .actions {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-        }
+/* ACTION BOXES */
+.actions{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:20px;
+}
 
-        .action-box {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            text-align: center;
-        }
+.action-box{
+    background:white;
+    padding:25px;
+    border-radius:12px;
+    text-align:center;
+    box-shadow:0 4px 12px rgba(0,0,0,0.1);
+}
 
-        .action-box h3 {
-            color: #0b78a6;
-            margin-bottom: 15px;
-        }
+.action-box h3{
+    color:#0b78a6;
+    margin-bottom:15px;
+}
 
-        .action-box button {
-            background: #0b78a6;
-            color: white;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 6px;
-            cursor: pointer;
-        }
+.action-box button{
+    background:#0b78a6;
+    color:white;
+    border:none;
+    padding:10px 16px;
+    border-radius:6px;
+    cursor:pointer;
+}
 
-        .action-box button:hover {
-            background: #095c80;
-        }
-    </style>
+.action-box button:hover{
+    background:#095c80;
+}
+</style>
 </head>
+
 <body>
 
 <header>
-    <h1>Admin Dashboard</h1>
+    <h1>MediCare | Admin Dashboard</h1>
 
     <div class="right">
-        <div class="admin-name">
-            Logged in as: <?php echo htmlspecialchars($adminName); ?>
-        </div>
-        <a class="logout-btn" href="logout.php">Logout</a>
+        <span>👤 <?php echo htmlspecialchars($adminName); ?></span>
+        <a href="logout.php" class="logout-btn">Logout</a>
     </div>
 </header>
 
 <div class="dashboard">
 
-    <!-- Summary Cards (demo numbers for now) -->
+    <!-- STAT CARDS -->
     <div class="cards">
         <div class="card">
             <h2>12</h2>
@@ -168,38 +168,40 @@ $adminName = $_SESSION["name"] ?? "Admin";
         </div>
     </div>
 
-    <!-- Action Buttons -->
+    <!-- ACTIONS -->
     <div class="actions">
+
         <div class="action-box">
             <h3>Manage Doctors</h3>
-            <button onclick="goDoctors()">View Doctors</button>
+            <button onclick="goDoctors()">Open</button>
         </div>
 
         <div class="action-box">
             <h3>View Appointments</h3>
-            <button onclick="goAppointments()">View Appointments</button>
+            <button onclick="goAppointments()">Open</button>
         </div>
 
         <div class="action-box">
             <h3>Patient Records</h3>
-            <button onclick="goPatients()">View Patients</button>
+            <button onclick="goPatients()">Open</button>
         </div>
+
     </div>
 
 </div>
 
 <script>
-    function goDoctors() {
-        window.location.href = "manage-doctors.php";
-    }
+function goDoctors(){
+    window.location.href="manage-doctors.php";
+}
 
-    function goAppointments() {
-        window.location.href = "view-appointments.php";
-    }
+function goAppointments(){
+    window.location.href="view-appointments.php";
+}
 
-    function goPatients() {
-        window.location.href = "patient-records.php"; // you can create later
-    }
+function goPatients(){
+    window.location.href="patient-records.php";
+}
 </script>
 
 </body>
