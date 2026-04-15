@@ -121,6 +121,12 @@ h2 {
 .error {
     color: red;
     text-align: center;
+    margin-top: 10px;
+}
+
+.register-link {
+    text-align: center;
+    margin-top: 15px;
 }
 </style>
 </head>
@@ -161,6 +167,16 @@ h2 {
             <button type="submit" class="btn">Login</button>
 
         </form>
+
+        <!-- ✅ REGISTER LINK ADDED HERE -->
+        <div class="register-link">
+            <p>
+                Don't have an account?
+                <a href="register.php" style="color:#0b78a6; font-weight:bold;">
+                    Register Here
+                </a>
+            </p>
+        </div>
 
     </div>
 </div>
