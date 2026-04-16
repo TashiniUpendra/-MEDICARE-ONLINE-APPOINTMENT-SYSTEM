@@ -1,127 +1,32 @@
 <?php
 session_start();
 
-// Only patient access
-if (!isset($_SESSION["role"]) || $_SESSION["role"] !== "patient") {
-    header("Location: login.php");
-    exit();
-}
-
-// Get appointment data from session
 if (!isset($_SESSION["appointment"])) {
-    header("Location: appointment-booking.php");
+    header("Location: doctor-list.php");
     exit();
 }
 
-$appointment = $_SESSION["appointment"];
-
-// Generate appointment ID
-$appointmentId = "APT-" . date("Ymd") . "-" . rand(1000, 9999);
+$app = $_SESSION["appointment"];
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>MediCare | Appointment Confirmation</title>
-
-<style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:"Poppins", sans-serif;
-}
-
-body{
-    background:#f0faff;
-}
-
-header{
-    background:#0b78a6;
-    color:white;
-    text-align:center;
-    padding:18px;
-    font-size:22px;
-    font-weight:bold;
-}
-
-.container{
-    width:90%;
-    max-width:600px;
-    margin:40px auto;
-    background:white;
-    padding:30px;
-    border-radius:12px;
-    box-shadow:0 4px 18px rgba(0,0,0,0.12);
-}
-
-h2{
-    color:#0b78a6;
-    text-align:center;
-    margin-bottom:20px;
-}
-
-.success{
-    color:green;
-    font-weight:bold;
-    text-align:center;
-    margin-bottom:20px;
-}
-
-.details p{
-    margin:10px 0;
-    font-size:16px;
-}
-
-.badge{
-    background:#e6f4fb;
-    color:#0b78a6;
-    padding:6px 10px;
-    border-radius:6px;
-    font-weight:bold;
-}
-
-.btn{
-    display:block;
-    text-align:center;
-    margin-top:20px;
-    text-decoration:none;
-    background:#0b78a6;
-    color:white;
-    padding:12px;
-    border-radius:6px;
-}
-
-.btn:hover{
-    background:#095c80;
-}
-</style>
+<title>Confirmed</title>
 </head>
 
 <body>
 
-<header>MediCare | Appointment Confirmation</header>
+<h2>Appointment Confirmed ✅</h2>
 
-<div class="container">
+<p>Name: <?php echo $app["patient"]; ?></p>
+<p>Email: <?php echo $app["email"]; ?></p>
+<p>Doctor: <?php echo $app["doctor"]; ?></p>
+<p>Date: <?php echo $app["date"]; ?></p>
+<p>Time: <?php echo $app["time"]; ?></p>
+<p>Reason: <?php echo $app["reason"]; ?></p>
 
-<h2>Appointment Confirmed</h2>
-
-<p class="success">✅ Your appointment has been successfully booked!</p>
-
-<div class="details">
-    <p><strong>Appointment ID:</strong> <span class="badge"><?php echo $appointmentId; ?></span></p>
-    <p><strong>Patient Name:</strong> <?php echo htmlspecialchars($appointment["patient"]); ?></p>
-    <p><strong>Email:</strong> <?php echo htmlspecialchars($appointment["email"]); ?></p>
-    <p><strong>Doctor:</strong> <?php echo htmlspecialchars($appointment["doctor"]); ?></p>
-    <p><strong>Date:</strong> <?php echo htmlspecialchars($appointment["date"]); ?></p>
-    <p><strong>Time:</strong> <?php echo htmlspecialchars($appointment["time"]); ?></p>
-    <p><strong>Reason:</strong> <?php echo htmlspecialchars($appointment["reason"]); ?></p>
-</div>
-
-<a href="patient-dashboard.php" class="btn">Go to Dashboard</a>
-
-</div>
+<a href="patient-dashboard.php">Go Dashboard</a>
 
 </body>
 </html>
