@@ -1,184 +1,94 @@
 <?php
-session_start();
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-/* If already logged in */
-if (isset($_SESSION["role"])) {
-    header("Location: home.php");
-    exit();
-}
+session_start();
+include "db.php";
 
 $error = "";
 
-/* Handle login */
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-    $role = $_POST["role"] ?? "";
-    $email = $_POST["email"] ?? "";
-    $password = $_POST["password"] ?? "";
+    $role = $_POST["role"];
+    $email = $_POST["email"];
+    $password = $_POST["password"];
 
-    if (!empty($role) && !empty($email) && !empty($password)) {
+    $sql = "SELECT * FROM users WHERE email='$email' AND role='$role'";
+    $result = mysqli_query($conn, $sql);
 
-        /* ADMIN LOGIN */
-        if ($role === "admin" && $email === "admin@medicare.com" && $password === "admin123") {
-            $_SESSION["name"] = "Admin";
-            $_SESSION["email"] = $email;
-            $_SESSION["role"] = "admin";
-            header("Location: admin-dashboard.php");
+    if (mysqli_num_rows($result) === 1) {
+
+        $user = mysqli_fetch_assoc($result);
+
+        if (password_verify($password, $user["password"])) {
+
+            $_SESSION["name"] = $user["name"];
+            $_SESSION["role"] = $user["role"];
+
+            if ($user["role"] === "admin") {
+                header("Location: admin-dashboard.php");
+            } elseif ($user["role"] === "doctor") {
+                header("Location: doctor-dashboard.php");
+            } else {
+                header("Location: patient-dashboard.php");
+            }
             exit();
+        } else {
+            $error = "Wrong password!";
         }
 
-        /* DOCTOR LOGIN (Demo) */
-        if ($role === "doctor") {
-            $_SESSION["name"] = "Dr. User";
-            $_SESSION["email"] = $email;
-            $_SESSION["role"] = "doctor";
-            header("Location: doctor-dashboard.php");
-            exit();
-        }
-
-        /* PATIENT LOGIN (Demo) */
-        if ($role === "patient") {
-            $_SESSION["name"] = "Patient User";
-            $_SESSION["email"] = $email;
-            $_SESSION["role"] = "patient";
-            header("Location: patient-dashboard.php");
-            exit();
-        }
-
-        $error = "Invalid login credentials!";
     } else {
-        $error = "Please fill all fields!";
+        $error = "User not found!";
     }
 }
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MediCare | Login</title>
+<title>Login</title>
 
 <style>
-body {
-    font-family: Arial;
-    background: #f0faff;
-}
-
-.container {
-    width: 100%;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.login-box {
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
-    width: 350px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-}
-
-h2 {
-    text-align: center;
-    color: #0b78a6;
-}
-
-.input-group {
-    margin-top: 15px;
-}
-
-.input-group label {
-    font-weight: bold;
-}
-
-.input-group input,
-.input-group select {
-    width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-}
-
-.btn {
-    width: 100%;
-    margin-top: 20px;
-    padding: 10px;
-    background: #0b78a6;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.btn:hover {
-    background: #095c80;
-}
-
-.error {
-    color: red;
-    text-align: center;
-    margin-top: 10px;
-}
-
-.register-link {
-    text-align: center;
-    margin-top: 15px;
-}
+body {background:#f0faff;font-family:Arial;}
+.container {display:flex;justify-content:center;align-items:center;height:100vh;}
+.box {background:white;padding:30px;border-radius:10px;width:350px;}
+input,select {width:100%;padding:10px;margin-top:10px;}
+button {width:100%;padding:10px;margin-top:15px;background:#0b78a6;color:white;border:none;}
+.error {color:red;text-align:center;}
 </style>
+
 </head>
 
 <body>
 
 <div class="container">
-    <div class="login-box">
+<div class="box">
 
-        <h2>Login</h2>
+<h2>Login</h2>
 
-        <?php if ($error): ?>
-            <p class="error"><?php echo $error; ?></p>
-        <?php endif; ?>
+<?php if ($error) echo "<p class='error'>$error</p>"; ?>
 
-        <form method="POST">
+<form method="POST">
 
-            <div class="input-group">
-                <label>Role</label>
-                <select name="role" required>
-                    <option value="">-- Select Role --</option>
-                    <option value="admin">Admin</option>
-                    <option value="doctor">Doctor</option>
-                    <option value="patient">Patient</option>
-                </select>
-            </div>
+<select name="role" required>
+<option value="">Select Role</option>
+<option value="admin">Admin</option>
+<option value="doctor">Doctor</option>
+<option value="patient">Patient</option>
+</select>
 
-            <div class="input-group">
-                <label>Email</label>
-                <input type="email" name="email" required>
-            </div>
+<input type="email" name="email" placeholder="Email" required>
+<input type="password" name="password" placeholder="Password" required>
 
-            <div class="input-group">
-                <label>Password</label>
-                <input type="password" name="password" required>
-            </div>
+<button type="submit">Login</button>
 
-            <button type="submit" class="btn">Login</button>
+</form>
 
-        </form>
+<p style="text-align:center;">
+<a href="register.php">Register</a>
+</p>
 
-        <!-- ✅ REGISTER LINK ADDED HERE -->
-        <div class="register-link">
-            <p>
-                Don't have an account?
-                <a href="register.php" style="color:#0b78a6; font-weight:bold;">
-                    Register Here
-                </a>
-            </p>
-        </div>
-
-    </div>
+</div>
 </div>
 
 </body>
