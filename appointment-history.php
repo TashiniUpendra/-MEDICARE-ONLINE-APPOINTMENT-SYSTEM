@@ -1,159 +1,146 @@
 <?php
 session_start();
 
-/* Patient-only access */
+/* Patient only */
 if (!isset($_SESSION["role"]) || $_SESSION["role"] !== "patient") {
     header("Location: login.php");
     exit();
 }
 
-/*
-  DEMO appointment history
-  Later you can replace this with database data (MySQL)
-*/
-$appointments = [
-    [
-        "doctor" => "Dr. John Silva",
-        "specialty" => "Cardiologist",
-        "date" => "2025-01-10",
-        "time" => "10:30 AM",
-        "status" => "Completed"
-    ],
-    [
-        "doctor" => "Dr. Maya Fernando",
-        "specialty" => "Dermatologist",
-        "date" => "2025-01-18",
-        "time" => "2:00 PM",
-        "status" => "Pending"
-    ],
-    [
-        "doctor" => "Dr. Ruwan Perera",
-        "specialty" => "Neurologist",
-        "date" => "2024-12-22",
-        "time" => "11:00 AM",
-        "status" => "Cancelled"
-    ]
-];
+/* Get appointments */
+$appointments = [];
+
+/* Demo: session එකේ last booking එක show කරනවා */
+if (isset($_SESSION["appointment"])) {
+    $appointments[] = $_SESSION["appointment"];
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>MediCare | Appointment History</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>My Appointments</title>
 
-    <style>
-        *{
-            margin:0;
-            padding:0;
-            box-sizing:border-box;
-            font-family: "Poppins", sans-serif;
-        }
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Poppins", sans-serif;
+}
 
-        body{
-            background:#f0faff;
-        }
+body{
+    background:#eef6fb;
+}
 
-        header{
-            background:#0b78a6;
-            color:white;
-            padding:18px;
-            text-align:center;
-            font-size:22px;
-            font-weight:bold;
-        }
+/* HEADER */
+header{
+    background:#0b78a6;
+    color:white;
+    padding:15px;
+    text-align:center;
+    font-size:20px;
+}
 
-        .container{
-            width:90%;
-            margin:40px auto;
-            background:white;
-            padding:25px;
-            border-radius:12px;
-            box-shadow:0 4px 18px rgba(0,0,0,0.12);
-        }
+/* CONTAINER */
+.container{
+    width:90%;
+    max-width:900px;
+    margin:30px auto;
+}
 
-        h2{
-            color:#0b78a6;
-            margin-bottom:20px;
-            text-align:center;
-        }
+/* TABLE BOX */
+.table-box{
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 4px 15px rgba(0,0,0,0.1);
+}
 
-        table{
-            width:100%;
-            border-collapse:collapse;
-        }
+/* TABLE */
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:10px;
+}
 
-        th, td{
-            padding:12px;
-            text-align:center;
-            border-bottom:1px solid #d9e9f2;
-        }
+th, td{
+    padding:12px;
+    text-align:center;
+    border-bottom:1px solid #ddd;
+}
 
-        th{
-            background:#0b78a6;
-            color:white;
-        }
+th{
+    background:#e6f4fb;
+    color:#0b78a6;
+}
 
-        tr:hover{
-            background:#f2fbff;
-        }
+/* BUTTON */
+.btn{
+    display:inline-block;
+    margin-top:20px;
+    padding:10px 15px;
+    background:#0b78a6;
+    color:white;
+    text-decoration:none;
+    border-radius:6px;
+}
 
-        .status{
-            padding:6px 10px;
-            border-radius:6px;
-            color:white;
-            font-size:14px;
-        }
+.btn:hover{
+    background:#095c80;
+}
 
-        .completed{
-            background:#28a745;
-        }
-
-        .pending{
-            background:#ffc107;
-            color:#000;
-        }
-
-        .cancelled{
-            background:#dc3545;
-        }
-    </style>
+/* EMPTY */
+.empty{
+    text-align:center;
+    color:#777;
+    margin-top:20px;
+}
+</style>
 </head>
+
 <body>
 
-<header>MediCare | Appointment History</header>
+<header>My Appointments</header>
 
 <div class="container">
-    <h2>Your Appointments</h2>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Doctor</th>
-                <th>Specialty</th>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-        <?php foreach ($appointments as $a): 
-            $statusClass = strtolower($a["status"]);
-        ?>
-            <tr>
-                <td><?php echo htmlspecialchars($a["doctor"]); ?></td>
-                <td><?php echo htmlspecialchars($a["specialty"]); ?></td>
-                <td><?php echo htmlspecialchars($a["date"]); ?></td>
-                <td><?php echo htmlspecialchars($a["time"]); ?></td>
-                <td>
-                    <span class="status <?php echo $statusClass; ?>">
-                        <?php echo htmlspecialchars($a["status"]); ?>
-                    </span>
-                </td>
-            </tr>
-        <?php endforeach; ?>
-        </tbody>
-    </table>
+<div class="table-box">
+
+<?php if (count($appointments) > 0): ?>
+
+<table>
+<tr>
+    <th>Name</th>
+    <th>Email</th>
+    <th>Doctor</th>
+    <th>Date</th>
+    <th>Time</th>
+    <th>Reason</th>
+</tr>
+
+<?php foreach ($appointments as $app): ?>
+<tr>
+    <td><?php echo htmlspecialchars($app["patient"]); ?></td>
+    <td><?php echo htmlspecialchars($app["email"]); ?></td>
+    <td><?php echo htmlspecialchars($app["doctor"]); ?></td>
+    <td><?php echo htmlspecialchars($app["date"]); ?></td>
+    <td><?php echo htmlspecialchars($app["time"]); ?></td>
+    <td><?php echo htmlspecialchars($app["reason"]); ?></td>
+</tr>
+<?php endforeach; ?>
+
+</table>
+
+<?php else: ?>
+<p class="empty">No appointments found.</p>
+<?php endif; ?>
+
+<a href="patient-dashboard.php" class="btn">⬅ Back to Dashboard</a>
+
+</div>
+
 </div>
 
 </body>
