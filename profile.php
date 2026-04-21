@@ -7,142 +7,103 @@ if (!isset($_SESSION["role"])) {
     exit();
 }
 
-/* Get user data */
-$name  = $_SESSION["name"] ?? "";
-$email = $_SESSION["email"] ?? "";
+/* Safe values */
+$name  = $_SESSION["name"] ?? "No Name";
+$email = $_SESSION["email"] ?? "No Email";
 $role  = $_SESSION["role"] ?? "";
 
-/* Update profile */
+/* Update */
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-    $_SESSION["name"]  = $_POST["name"];
-    $_SESSION["email"] = $_POST["email"];
+    $_SESSION["name"]  = $_POST["name"] ?? $name;
+    $_SESSION["email"] = $_POST["email"] ?? $email;
 
-    // reload updated values
+    // reload values
     $name  = $_SESSION["name"];
     $email = $_SESSION["email"];
+
+    $msg = "Profile Updated Successfully!";
 }
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>My Profile</title>
+<title>Profile</title>
 
 <style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:"Poppins", sans-serif;
-}
-
 body{
+    font-family:Arial;
     background:#eef6fb;
 }
 
-/* HEADER */
-header{
-    background:#0b78a6;
-    color:white;
-    padding:15px;
-    text-align:center;
-    font-size:20px;
-}
-
-/* CONTAINER */
-.container{
-    width:90%;
-    max-width:500px;
-    margin:40px auto;
-}
-
-/* CARD */
-.card{
+.box{
+    width:350px;
+    margin:80px auto;
     background:white;
     padding:25px;
-    border-radius:12px;
-    box-shadow:0 4px 15px rgba(0,0,0,0.1);
+    border-radius:10px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.1);
 }
 
-/* TITLE */
 h2{
     text-align:center;
     color:#0b78a6;
-    margin-bottom:20px;
 }
 
-/* INPUT */
 input{
     width:100%;
     padding:10px;
     margin-top:10px;
-    border-radius:6px;
+    border-radius:5px;
     border:1px solid #ccc;
 }
 
-/* LABEL */
-label{
-    font-weight:bold;
-    margin-top:10px;
-    display:block;
-}
-
-/* BUTTON */
 .btn{
     width:100%;
     margin-top:15px;
-    padding:12px;
+    padding:10px;
     background:#0b78a6;
     color:white;
     border:none;
-    border-radius:6px;
-    cursor:pointer;
+    border-radius:5px;
 }
 
-.btn:hover{
-    background:#095c80;
+.msg{
+    text-align:center;
+    color:green;
 }
 
-/* BACK */
 .back{
     display:block;
-    margin-top:15px;
     text-align:center;
-    text-decoration:none;
-    color:#0b78a6;
+    margin-top:10px;
 }
 </style>
 </head>
 
 <body>
 
-<header>My Profile</header>
+<div class="box">
 
-<div class="container">
-<div class="card">
+<h2>My Profile</h2>
 
-<h2>Profile Details</h2>
+<?php if(isset($msg)) echo "<p class='msg'>$msg</p>"; ?>
 
 <form method="POST">
 
-<label>Name</label>
-<input type="text" name="name" value="<?php echo htmlspecialchars($name); ?>" required>
+<input type="text" name="name" value="<?php echo $name; ?>" required>
 
-<label>Email</label>
-<input type="email" name="email" value="<?php echo htmlspecialchars($email); ?>" required>
+<input type="email" name="email" value="<?php echo $email; ?>" required>
 
-<label>Role</label>
-<input type="text" value="<?php echo htmlspecialchars($role); ?>" disabled>
+<input type="text" value="<?php echo $role; ?>" disabled>
 
-<button type="submit" class="btn">Update Profile</button>
+<button class="btn">Update</button>
 
 </form>
 
-<a href="patient-dashboard.php" class="back">⬅ Back to Dashboard</a>
+<a href="patient-dashboard.php" class="back">⬅ Back</a>
 
-</div>
 </div>
 
 </body>
