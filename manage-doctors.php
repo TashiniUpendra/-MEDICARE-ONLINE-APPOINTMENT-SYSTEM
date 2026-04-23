@@ -1,5 +1,6 @@
 <?php
 session_start();
+include "db.php";
 
 /* Admin-only access */
 if (!isset($_SESSION["role"]) || $_SESSION["role"] !== "admin") {
@@ -7,52 +8,47 @@ if (!isset($_SESSION["role"]) || $_SESSION["role"] !== "admin") {
     exit();
 }
 
-/* Initialize doctors (demo) */
-if (!isset($_SESSION["doctors"])) {
-    $_SESSION["doctors"] = [
-        ["name" => "Dr. John Silva", "specialization" => "Cardiology", "time" => "9:00 AM - 2:00 PM"],
-        ["name" => "Dr. Maya Fernando", "specialization" => "Dermatology", "time" => "10:00 AM - 4:00 PM"]
-    ];
-}
-
-/* Add Doctor */
+/* ADD DOCTOR */
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $name = trim($_POST["doctorName"]);
-    $spec = trim($_POST["specialization"]);
-    $time = trim($_POST["time"]);
 
-    if ($name && $spec && $time) {
-        $_SESSION["doctors"][] = [
-            "name" => $name,
-            "specialization" => $spec,
-            "time" => $time
-        ];
-    }
+    $name = $_POST["doctorName"];
+    $email = $_POST["email"];
+    $password = password_hash($_POST["password"], PASSWORD_DEFAULT);
+    $spec = $_POST["specialization"];
+    $time = $_POST["time"];
+
+    // Insert into users (login)
+    $sql1 = "INSERT INTO users (name,email,password,role)
+             VALUES ('$name','$email','$password','doctor')";
+    mysqli_query($conn, $sql1);
+
+    // Insert into doctors (details)
+    $sql2 = "INSERT INTO doctors (name,specialization,available_time)
+             VALUES ('$name','$spec','$time')";
+    mysqli_query($conn, $sql2);
 
     header("Location: manage-doctors.php");
     exit();
 }
 
-/* Delete Doctor */
+/* DELETE DOCTOR */
 if (isset($_GET["delete"])) {
-    $index = (int)$_GET["delete"];
 
-    if (isset($_SESSION["doctors"][$index])) {
-        unset($_SESSION["doctors"][$index]);
-        $_SESSION["doctors"] = array_values($_SESSION["doctors"]); // reindex
-    }
+    $id = $_GET["delete"];
+
+    mysqli_query($conn, "DELETE FROM doctors WHERE id='$id'");
 
     header("Location: manage-doctors.php");
     exit();
 }
 
-$doctors = $_SESSION["doctors"];
+/* FETCH DOCTORS */
+$result = mysqli_query($conn, "SELECT * FROM doctors");
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
 <title>Manage Doctors</title>
 
 <style>
@@ -113,6 +109,10 @@ input{
     cursor:pointer;
 }
 
+.add-btn:hover{
+    background:#155d7a;
+}
+
 /* Table */
 table{
     width:100%;
@@ -151,12 +151,14 @@ th{
 
 <div class="container">
 
-<!-- Add Form -->
+<!-- ADD DOCTOR -->
 <div class="box">
     <h3>Add Doctor</h3>
 
     <form method="POST">
         <input type="text" name="doctorName" placeholder="Doctor Name" required>
+        <input type="email" name="email" placeholder="Doctor Email" required>
+        <input type="password" name="password" placeholder="Password" required>
         <input type="text" name="specialization" placeholder="Specialization" required>
         <input type="text" name="time" placeholder="Available Time" required>
 
@@ -164,41 +166,36 @@ th{
     </form>
 </div>
 
-<!-- Table -->
+<!-- DOCTOR LIST -->
 <div class="box">
     <h3>Doctor List</h3>
 
-    <?php if (count($doctors) > 0): ?>
-
     <table>
         <tr>
+            <th>ID</th>
             <th>Name</th>
             <th>Specialization</th>
             <th>Time</th>
             <th>Action</th>
         </tr>
 
-        <?php foreach ($doctors as $i => $doc): ?>
+        <?php while($row = mysqli_fetch_assoc($result)): ?>
         <tr>
-            <td><?php echo htmlspecialchars($doc["name"]); ?></td>
-            <td><?php echo htmlspecialchars($doc["specialization"]); ?></td>
-            <td><?php echo htmlspecialchars($doc["time"]); ?></td>
+            <td><?php echo $row["id"]; ?></td>
+            <td><?php echo htmlspecialchars($row["name"]); ?></td>
+            <td><?php echo htmlspecialchars($row["specialization"]); ?></td>
+            <td><?php echo htmlspecialchars($row["available_time"]); ?></td>
             <td>
                 <a class="delete"
-                   href="?delete=<?php echo $i; ?>"
-                   onclick="return confirm('Are you sure?')">
+                   href="?delete=<?php echo $row["id"]; ?>"
+                   onclick="return confirm('Delete doctor?')">
                    Delete
                 </a>
             </td>
         </tr>
-        <?php endforeach; ?>
+        <?php endwhile; ?>
 
     </table>
-
-    <?php else: ?>
-        <p>No doctors available.</p>
-    <?php endif; ?>
-
 </div>
 
 </div>
