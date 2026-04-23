@@ -59,10 +59,21 @@ h2{
     margin-bottom:20px;
 }
 
+/* FORM GROUP */
+.form-group{
+    margin-bottom:15px;
+}
+
+label{
+    display:block;
+    font-weight:bold;
+    color:#0b78a6;
+    margin-bottom:5px;
+}
+
 input, select, textarea{
     width:100%;
     padding:10px;
-    margin-top:10px;
     border-radius:6px;
     border:1px solid #ccc;
 }
@@ -71,6 +82,7 @@ textarea{
     resize:none;
 }
 
+/* BUTTON */
 .btn{
     width:100%;
     margin-top:15px;
@@ -91,19 +103,27 @@ textarea{
 <body>
 
 <div class="container">
-<h2>Book Appointment</h2>
+<h2>📅 Book Appointment</h2>
 
 <form method="POST">
 
 <!-- Patient Name -->
+<div class="form-group">
+<label>Patient Name</label>
 <input type="text" name="patient_name"
 value="<?php echo htmlspecialchars($patientName); ?>" required>
+</div>
 
 <!-- Email -->
+<div class="form-group">
+<label>Email</label>
 <input type="email" name="email"
 value="<?php echo htmlspecialchars($patientEmail); ?>" required>
+</div>
 
 <!-- Doctor -->
+<div class="form-group">
+<label>Select Doctor</label>
 <select name="doctor" required>
 
 <option value="">-- Select Doctor --</option>
@@ -129,15 +149,25 @@ Dr. Nadeesha Karun (Pediatrician)
 </option>
 
 </select>
+</div>
 
 <!-- Date -->
+<div class="form-group">
+<label>Appointment Date</label>
 <input type="date" name="date" required>
+</div>
 
 <!-- Time -->
+<div class="form-group">
+<label>Appointment Time</label>
 <input type="time" name="time" required>
+</div>
 
 <!-- Reason -->
-<textarea name="reason" placeholder="Reason for visit"></textarea>
+<div class="form-group">
+<label>Reason for Visit</label>
+<textarea name="reason" placeholder="Enter reason"></textarea>
+</div>
 
 <button type="submit" class="btn">Confirm Appointment</button>
 
