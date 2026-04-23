@@ -49,13 +49,71 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <title>MediCare | Login</title>
 
 <style>
+
+/* ===== BODY ANIMATION ===== */
 body {
     margin:0;
     font-family: "Poppins", sans-serif;
-    background: linear-gradient(135deg,#0b78a6,#6dd5fa);
+    background: linear-gradient(-45deg, #0b78a6, #6dd5fa, #2980b9, #00c6ff);
+    background-size: 400% 400%;
+    animation: gradientBG 10s ease infinite;
 }
 
-/* CENTER BOX */
+/* Gradient animation */
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* ===== BUBBLES ===== */
+.bubbles{
+    position: fixed;
+    width:100%;
+    height:100%;
+    top:0;
+    left:0;
+    overflow:hidden;
+    z-index:-1;
+}
+
+.bubbles span{
+    position:absolute;
+    display:block;
+    width:20px;
+    height:20px;
+    background:rgba(255,255,255,0.3);
+    animation: animate 20s linear infinite;
+    bottom:-150px;
+    border-radius:50%;
+}
+
+.bubbles span:nth-child(1){ left:10%; animation-delay:0s; }
+.bubbles span:nth-child(2){ left:20%; animation-delay:2s; }
+.bubbles span:nth-child(3){ left:25%; animation-delay:4s; }
+.bubbles span:nth-child(4){ left:40%; animation-delay:0s; }
+.bubbles span:nth-child(5){ left:70%; animation-delay:3s; }
+.bubbles span:nth-child(6){ left:80%; animation-delay:5s; }
+.bubbles span:nth-child(7){ left:50%; animation-delay:7s; }
+.bubbles span:nth-child(8){ left:60%; animation-delay:1s; }
+.bubbles span:nth-child(9){ left:30%; animation-delay:6s; }
+.bubbles span:nth-child(10){ left:90%; animation-delay:8s; }
+
+@keyframes animate{
+    0%{
+        transform:translateY(0) scale(0);
+        opacity:0;
+    }
+    50%{
+        opacity:1;
+    }
+    100%{
+        transform:translateY(-1000px) scale(1);
+        opacity:0;
+    }
+}
+
+/* ===== CENTER BOX ===== */
 .container {
     display:flex;
     justify-content:center;
@@ -63,18 +121,21 @@ body {
     height:100vh;
 }
 
+/* GLASS UI */
 .box {
-    background:white;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(12px);
     padding:35px;
     border-radius:12px;
     width:360px;
-    box-shadow:0 8px 25px rgba(0,0,0,0.2);
+    box-shadow:0 8px 25px rgba(0,0,0,0.3);
     text-align:center;
+    color:white;
 }
 
+/* TITLE */
 h2 {
     margin-bottom:20px;
-    color:#0b78a6;
 }
 
 /* INPUTS */
@@ -83,11 +144,11 @@ input, select {
     padding:12px;
     margin-top:10px;
     border-radius:6px;
-    border:1px solid #ccc;
-    font-size:14px;
+    border:none;
+    outline:none;
 }
 
-/* BUTTONS */
+/* BUTTON */
 button {
     width:100%;
     padding:12px;
@@ -104,24 +165,26 @@ button:hover {
     background:#095c80;
 }
 
+/* LINKS */
+a {
+    color:#fff;
+    text-decoration:none;
+    font-weight:bold;
+}
+
 /* HOME BUTTON */
 .home-btn {
     display:block;
     margin-top:10px;
     padding:10px;
-    background:#eee;
-    color:#333;
-    text-decoration:none;
+    background:white;
+    color:#0b78a6;
     border-radius:6px;
-}
-
-.home-btn:hover {
-    background:#ddd;
 }
 
 /* ERROR */
 .error {
-    color:red;
+    color:#ffcccc;
     margin-bottom:10px;
 }
 </style>
@@ -130,10 +193,16 @@ button:hover {
 
 <body>
 
+<!-- BUBBLES -->
+<div class="bubbles">
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+</div>
+
 <div class="container">
 <div class="box">
 
-<h2>🔐 Login</h2>
+<h2>🔐 MediCare Login</h2>
 
 <?php if ($error) echo "<p class='error'>$error</p>"; ?>
 
@@ -153,13 +222,11 @@ button:hover {
 
 </form>
 
-<!-- Register -->
 <p style="margin-top:15px;">
 Don't have an account? 
-<a href="register.php" style="color:#0b78a6;font-weight:bold;">Register</a>
+<a href="register.php">Register</a>
 </p>
 
-<!-- 🔥 NEW HOME BUTTON -->
 <a href="home.php" class="home-btn">🏠 Go to Home</a>
 
 </div>
