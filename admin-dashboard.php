@@ -9,6 +9,7 @@ if (!isset($_SESSION["role"]) || $_SESSION["role"] !== "admin") {
 
 $adminName = $_SESSION["name"] ?? "Admin";
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,10 +39,6 @@ header{
     align-items:center;
 }
 
-header h1{
-    font-size:22px;
-}
-
 .right{
     display:flex;
     align-items:center;
@@ -55,10 +52,6 @@ header h1{
     border-radius:6px;
     text-decoration:none;
     font-weight:bold;
-}
-
-.logout-btn:hover{
-    background:#e6f4fb;
 }
 
 /* DASHBOARD */
@@ -80,21 +73,11 @@ header h1{
     border-radius:12px;
     text-align:center;
     box-shadow:0 4px 12px rgba(0,0,0,0.1);
-    transition:0.3s;
-}
-
-.card:hover{
-    transform:translateY(-5px);
 }
 
 .card h2{
     color:#0b78a6;
     font-size:30px;
-}
-
-.card p{
-    margin-top:10px;
-    font-weight:600;
 }
 
 /* ACTION BOXES */
@@ -117,16 +100,16 @@ header h1{
     margin-bottom:15px;
 }
 
-.action-box button{
+.btn{
+    display:inline-block;
     background:#0b78a6;
     color:white;
-    border:none;
     padding:10px 16px;
     border-radius:6px;
-    cursor:pointer;
+    text-decoration:none;
 }
 
-.action-box button:hover{
+.btn:hover{
     background:#095c80;
 }
 </style>
@@ -135,7 +118,7 @@ header h1{
 <body>
 
 <header>
-    <h1>MediCare | Admin Dashboard</h1>
+    <h2>MediCare | Admin Dashboard</h2>
 
     <div class="right">
         <span>👤 <?php echo htmlspecialchars($adminName); ?></span>
@@ -173,36 +156,22 @@ header h1{
 
         <div class="action-box">
             <h3>Manage Doctors</h3>
-            <button onclick="goDoctors()">Open</button>
+            <a href="manage_doctors.php" class="btn">Open</a>
         </div>
 
         <div class="action-box">
             <h3>View Appointments</h3>
-            <button onclick="goAppointments()">Open</button>
+            <a href="view-appointments.php" class="btn">Open</a>
         </div>
 
         <div class="action-box">
             <h3>Patient Records</h3>
-            <button onclick="goPatients()">Open</button>
+            <a href="patient-records.php" class="btn">Open</a>
         </div>
 
     </div>
 
 </div>
-
-<script>
-function goDoctors(){
-    window.location.href="manage-doctors.php";
-}
-
-function goAppointments(){
-    window.location.href="view-appointments.php";
-}
-
-function goPatients(){
-    window.location.href="patient-records.php";
-}
-</script>
 
 </body>
 </html>
