@@ -2,107 +2,80 @@
 session_start();
 include "db.php";
 
-// Get doctor ID from URL
-if (!isset($_GET['id'])) {
-    die("Doctor not found!");
+/* Doctor only */
+if (!isset($_SESSION["role"]) || $_SESSION["role"] !== "doctor") {
+    header("Location: login.php");
+    exit();
 }
 
-$id = (int) $_GET['id'];
+$email = $_SESSION["email"];
 
-// Fetch doctor from database
-$sql = "SELECT * FROM doctors WHERE id = $id";
-$result = $conn->query($sql);
+$sql = "SELECT * FROM users WHERE email='$email'";
+$result = mysqli_query($conn, $sql);
+$user = mysqli_fetch_assoc($result);
 
-if ($result->num_rows == 0) {
-    die("Doctor not found!");
+/* image fallback */
+$image = "uploads/" . $user["image"];
+
+if (empty($user["image"]) || !file_exists($image)) {
+    $image = "https://cdn-icons-png.flaticon.com/512/387/387561.png";
 }
-
-$doctor = $result->fetch_assoc();
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>MediCare | Doctor Profile</title>
+<title>Doctor Profile</title>
 
 <style>
-body {
-    font-family: Arial;
-    background: #f0faff;
+body{
+    font-family:Arial;
+    background:#eef6fb;
 }
 
-header {
-    background: #0b78a6;
-    color: white;
-    padding: 15px;
-    text-align: center;
+.container{
+    width:400px;
+    margin:50px auto;
+    background:white;
+    padding:30px;
+    border-radius:10px;
+    text-align:center;
+    box-shadow:0 4px 10px rgba(0,0,0,0.1);
 }
 
-.container {
-    width: 90%;
-    max-width: 900px;
-    margin: 30px auto;
+img{
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    object-fit:cover;
+    margin-bottom:15px;
+    border:3px solid #0b78a6;
 }
 
-.profile {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    display: flex;
-    gap: 20px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
-.profile img {
-    width: 140px;
-    height: 140px;
-    border-radius: 50%;
-}
-
-.schedule {
-    margin-top: 20px;
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-}
-
-.btn {
-    display: inline-block;
-    margin-top: 15px;
-    background: #0b78a6;
-    color: white;
-    padding: 10px;
-    text-decoration: none;
-    border-radius: 5px;
+a{
+    display:inline-block;
+    margin-top:15px;
+    padding:8px 12px;
+    background:#0b78a6;
+    color:white;
+    text-decoration:none;
+    border-radius:6px;
 }
 </style>
 </head>
 
 <body>
 
-<header>Doctor Profile</header>
-
 <div class="container">
 
-<div class="profile">
-    <img src="https://via.placeholder.com/140" alt="Doctor">
+<h2>Doctor Profile</h2>
 
-    <div>
-        <h2><?php echo htmlspecialchars($doctor['name']); ?></h2>
-        <p><strong>Specialty:</strong> <?php echo htmlspecialchars($doctor['specialization']); ?></p>
-        <p><strong>Experience:</strong> <?php echo htmlspecialchars($doctor['experience']); ?></p>
-        <p><strong>Available Time:</strong> <?php echo htmlspecialchars($doctor['available_time']); ?></p>
-    </div>
-</div>
+<img src="<?php echo $image; ?>">
 
-<div class="schedule">
-    <h3>Book Appointment</h3>
+<h3><?php echo htmlspecialchars($user["name"]); ?></h3>
+<p><?php echo htmlspecialchars($user["email"]); ?></p>
 
-    <a class="btn" href="appointment-booking.php?doctor_id=<?php echo $doctor['id']; ?>">
-        Book Now
-    </a>
-</div>
+<a href="doctor-dashboard.php">⬅ Back</a>
 
 </div>
 
