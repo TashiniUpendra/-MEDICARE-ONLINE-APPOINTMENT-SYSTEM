@@ -15,16 +15,16 @@ if (!is_dir($uploadDir)) {
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-    $name = $_POST["name"];
+    $name  = $_POST["name"];
     $email = $_POST["email"];
     $password = password_hash($_POST["password"], PASSWORD_DEFAULT);
-    $role = $_POST["role"];
+    $role  = $_POST["role"];
     $specialization = $_POST["specialization"] ?? "";
 
     $imageName = "";
 
-    /* Image upload */
-    if ($role === "doctor" && isset($_FILES["image"]["name"])) {
+    /* Doctor image upload */
+    if ($role === "doctor" && !empty($_FILES["image"]["name"])) {
 
         $fileName = time() . "_" . $_FILES["image"]["name"];
         $targetFile = $uploadDir . $fileName;
@@ -91,6 +91,7 @@ button{
     padding:10px;
     background:#0b78a6;
     color:#fff;
+    border:none;
 }
 </style>
 
@@ -98,16 +99,11 @@ button{
 function showDoctorFields() {
     let role = document.getElementById("role").value;
 
-    let imageField = document.getElementById("imageField");
-    let specField = document.getElementById("specField");
+    document.getElementById("imageField").style.display =
+        (role === "doctor") ? "block" : "none";
 
-    if (role === "doctor") {
-        imageField.style.display = "block";
-        specField.style.display = "block";
-    } else {
-        imageField.style.display = "none";
-        specField.style.display = "none";
-    }
+    document.getElementById("specField").style.display =
+        (role === "doctor") ? "block" : "none";
 }
 </script>
 
@@ -139,12 +135,20 @@ function showDoctorFields() {
 <!-- 🔥 Specialization -->
 <div id="specField" style="display:none;">
 <select name="specialization">
-<option value="">Select Specialization</option>
+<option value="">-- Select Specialization --</option>
+
+<option>General Physician</option>
 <option>Cardiologist</option>
 <option>Dermatologist</option>
 <option>Neurologist</option>
 <option>Pediatrician</option>
-<option>General Physician</option>
+<option>Orthopedic Surgeon</option>
+<option>Gynecologist</option>
+<option>ENT Specialist</option>
+<option>Psychiatrist</option>
+<option>Dentist</option>
+<option>Ophthalmologist</option>
+
 </select>
 </div>
 
