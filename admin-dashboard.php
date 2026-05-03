@@ -75,11 +75,6 @@ header{
     box-shadow:0 4px 12px rgba(0,0,0,0.1);
 }
 
-.card h2{
-    color:#0b78a6;
-    font-size:30px;
-}
-
 /* ACTION BOXES */
 .actions{
     display:grid;
@@ -128,7 +123,7 @@ header{
 
 <div class="dashboard">
 
-    <!-- STAT CARDS -->
+    <!-- CARDS -->
     <div class="cards">
         <div class="card">
             <h2>12</h2>
@@ -154,19 +149,26 @@ header{
     <!-- ACTIONS -->
     <div class="actions">
 
+        <!-- 🔥 FIXED LINKS -->
         <div class="action-box">
             <h3>Manage Doctors</h3>
-            <a href="manage_doctors.php" class="btn">Open</a>
+            <a href="/MEDICARE-ONLINE-APPOINTMENT-SYSTEM/manage-doctors.php" class="btn">
+                Open
+            </a>
         </div>
 
         <div class="action-box">
             <h3>View Appointments</h3>
-            <a href="view-appointments.php" class="btn">Open</a>
+            <a href="/MEDICARE-ONLINE-APPOINTMENT-SYSTEM/view-appointments.php" class="btn">
+                Open
+            </a>
         </div>
 
         <div class="action-box">
             <h3>Patient Records</h3>
-            <a href="patient-records.php" class="btn">Open</a>
+            <a href="/MEDICARE-ONLINE-APPOINTMENT-SYSTEM/patient-records.php" class="btn">
+                Open
+            </a>
         </div>
 
     </div>
