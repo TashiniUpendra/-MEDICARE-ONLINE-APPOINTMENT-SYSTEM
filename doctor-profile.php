@@ -20,6 +20,13 @@ if (!$user) {
     die("Doctor not found!");
 }
 
+/* Success message */
+$success = "";
+
+if (isset($_GET["msg"]) && $_GET["msg"] == "success") {
+    $success = "Profile Updated Successfully!";
+}
+
 /* Doctor Image */
 $image = "uploads/" . $user["image"];
 
@@ -30,7 +37,7 @@ if (empty($user["image"]) || !file_exists($image)) {
 /* Values */
 $name = $user["name"] ?? "Doctor";
 $email = $user["email"] ?? "No Email";
-$specialization = $user["specialization"] ?? "Not Added";
+$specialization = $user["specialization"] ?? "";
 $address = $user["address"] ?? "";
 $role = strtoupper($user["role"]);
 $status = "ACTIVE";
@@ -97,16 +104,6 @@ body{
 /* MAIN */
 .main{
     padding:40px;
-}
-
-/* SUCCESS MESSAGE */
-.success{
-    background:#d1fae5;
-    color:#065f46;
-    padding:15px;
-    border-radius:12px;
-    margin-bottom:20px;
-    font-weight:500;
 }
 
 /* PROFILE HEADER */
@@ -199,14 +196,15 @@ body{
     color:#222;
 }
 
-/* TEXTAREA */
-textarea{
-    width:100%;
-    border:1px solid #ddd;
+/* FORM */
+.form-control{
     border-radius:12px;
-    padding:15px;
-    resize:none;
-    margin-top:10px;
+    padding:12px;
+}
+
+.form-label{
+    font-weight:500;
+    margin-bottom:6px;
 }
 
 /* BUTTON */
@@ -224,6 +222,16 @@ textarea{
 
 .edit-btn:hover{
     background:linear-gradient(135deg,#095c80,#0b78a6);
+}
+
+/* SUCCESS */
+.success{
+    background:#d1fae5;
+    color:#065f46;
+    padding:15px;
+    border-radius:12px;
+    margin-bottom:20px;
+    font-weight:500;
 }
 
 /* ANIMATION */
@@ -258,134 +266,172 @@ textarea{
 
 <div class="main">
 
-    <!-- SUCCESS MESSAGE -->
-    <?php if(isset($_GET['msg'])): ?>
-        <div class="success">
-            <i class="bi bi-check-circle-fill"></i>
-            Profile Updated Successfully!
+<?php if($success): ?>
+<div class="success">
+    <i class="bi bi-check-circle-fill"></i>
+    <?php echo $success; ?>
+</div>
+<?php endif; ?>
+
+<!-- PROFILE HEADER -->
+<div class="profile-header fade-in">
+
+    <div class="d-flex flex-column flex-md-row align-items-center gap-4">
+
+        <img src="<?php echo $image; ?>" class="avatar">
+
+        <div style="z-index:2;">
+            <h2 class="fw-bold mb-1">
+                Dr. <?php echo htmlspecialchars($name); ?>
+            </h2>
+
+            <p style="color:#dbeafe;font-size:17px;">
+                <i class="bi bi-envelope-fill"></i>
+                <?php echo htmlspecialchars($email); ?>
+            </p>
+
+            <span class="badge-custom badge-role">
+                <i class="bi bi-person-badge"></i>
+                <?php echo htmlspecialchars($role); ?>
+            </span>
+
+            <span class="badge-custom badge-status">
+                <i class="bi bi-check-circle-fill"></i>
+                <?php echo htmlspecialchars($status); ?>
+            </span>
         </div>
-    <?php endif; ?>
 
-    <!-- PROFILE HEADER -->
-    <div class="profile-header fade-in">
-
-        <div class="d-flex flex-column flex-md-row align-items-center gap-4">
-
-            <img src="<?php echo $image; ?>" class="avatar">
-
-            <div style="z-index:2;">
-                <h2 class="fw-bold mb-1">
-                    Dr. <?php echo htmlspecialchars($name); ?>
-                </h2>
-
-                <p style="color:#dbeafe;font-size:17px;">
-                    <i class="bi bi-envelope-fill"></i>
-                    <?php echo htmlspecialchars($email); ?>
-                </p>
-
-                <span class="badge-custom badge-role">
-                    <i class="bi bi-person-badge"></i>
-                    <?php echo htmlspecialchars($role); ?>
-                </span>
-
-                <span class="badge-custom badge-status">
-                    <i class="bi bi-check-circle-fill"></i>
-                    <?php echo htmlspecialchars($status); ?>
-                </span>
-            </div>
-
-        </div>
     </div>
+</div>
 
-    <!-- CONTENT -->
-    <div class="row g-4">
+<!-- CONTENT -->
+<div class="row g-4">
 
-        <!-- LEFT -->
-        <div class="col-lg-5">
+    <!-- LEFT -->
+    <div class="col-lg-5">
 
-            <div class="info-card fade-in">
+        <div class="info-card fade-in">
 
-                <div class="info-title">
-                    <i class="bi bi-person-lines-fill"></i>
-                    Doctor Information
-                </div>
-
-                <div class="info-box">
-                    <small>Full Name</small>
-                    <h6><?php echo htmlspecialchars($name); ?></h6>
-                </div>
-
-                <div class="info-box">
-                    <small>Email Address</small>
-                    <h6><?php echo htmlspecialchars($email); ?></h6>
-                </div>
-
-                <div class="info-box">
-                    <small>Specialization</small>
-                    <h6><?php echo htmlspecialchars($specialization); ?></h6>
-                </div>
-
-                <div class="info-box">
-                    <small>Address</small>
-                    <h6>
-                        <?php
-                        if(!empty($address)){
-                            echo htmlspecialchars($address);
-                        } else {
-                            echo "No address added";
-                        }
-                        ?>
-                    </h6>
-                </div>
-
-                <div class="info-box">
-                    <small>Account Status</small>
-                    <h6 style="color:#10b981;">ACTIVE</h6>
-                </div>
-
+            <div class="info-title">
+                <i class="bi bi-person-lines-fill"></i>
+                Doctor Information
             </div>
 
-        </div>
+            <div class="info-box">
+                <small>Full Name</small>
+                <h6><?php echo htmlspecialchars($name); ?></h6>
+            </div>
 
-        <!-- RIGHT -->
-        <div class="col-lg-7">
+            <div class="info-box">
+                <small>Email Address</small>
+                <h6><?php echo htmlspecialchars($email); ?></h6>
+            </div>
 
-            <div class="info-card fade-in">
+            <div class="info-box">
+                <small>Specialization</small>
+                <h6><?php echo htmlspecialchars($specialization); ?></h6>
+            </div>
 
-                <div class="info-title">
-                    <i class="bi bi-hospital"></i>
-                    Update Doctor Profile
-                </div>
-
-                <form action="update_profile.php" method="POST">
-
-                    <div class="info-box">
-                        <small>Medical Specialty</small>
-                        <h6><?php echo htmlspecialchars($specialization); ?></h6>
-                    </div>
-
-                    <div class="info-box">
-                        <small>Update Address</small>
-
-                        <textarea
-                            name="address"
-                            rows="5"
-                            placeholder="Enter your clinic or home address..."
-                        ><?php echo htmlspecialchars($address); ?></textarea>
-                    </div>
-
-                    <button type="submit" class="edit-btn">
-                        <i class="bi bi-check-circle-fill"></i>
-                        Update Profile
-                    </button>
-
-                </form>
-
+            <div class="info-box">
+                <small>Address</small>
+                <h6><?php echo htmlspecialchars($address); ?></h6>
             </div>
 
         </div>
 
     </div>
+
+    <!-- RIGHT -->
+    <div class="col-lg-7">
+
+        <div class="info-card fade-in">
+
+            <div class="info-title">
+                <i class="bi bi-pencil-square"></i>
+                Update Profile
+            </div>
+
+            <form action="update_profile.php" method="POST" enctype="multipart/form-data">
+
+                <div class="mb-3">
+                    <label class="form-label">Doctor Name</label>
+
+                    <input type="text"
+                    name="name"
+                    class="form-control"
+                    value="<?php echo htmlspecialchars($name); ?>"
+                    required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+
+                    <input type="email"
+                    name="email"
+                    class="form-control"
+                    value="<?php echo htmlspecialchars($email); ?>"
+                    required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Specialization</label>
+
+                    <select name="specialization"
+                    class="form-control"
+                    required>
+
+<option value="Cardiologist" <?php if($specialization=="Cardiologist") echo "selected"; ?>>Cardiologist</option>
+
+<option value="Neurologist" <?php if($specialization=="Neurologist") echo "selected"; ?>>Neurologist</option>
+
+<option value="Dermatologist" <?php if($specialization=="Dermatologist") echo "selected"; ?>>Dermatologist</option>
+
+<option value="Pediatrician" <?php if($specialization=="Pediatrician") echo "selected"; ?>>Pediatrician</option>
+
+<option value="Orthopedic" <?php if($specialization=="Orthopedic") echo "selected"; ?>>Orthopedic</option>
+
+<option value="ENT Specialist" <?php if($specialization=="ENT Specialist") echo "selected"; ?>>ENT Specialist</option>
+
+<option value="Psychiatrist" <?php if($specialization=="Psychiatrist") echo "selected"; ?>>Psychiatrist</option>
+
+<option value="Gynecologist" <?php if($specialization=="Gynecologist") echo "selected"; ?>>Gynecologist</option>
+
+<option value="Oncologist" <?php if($specialization=="Oncologist") echo "selected"; ?>>Oncologist</option>
+
+<option value="General Physician" <?php if($specialization=="General Physician") echo "selected"; ?>>General Physician</option>
+
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Address</label>
+
+                    <textarea
+                    name="address"
+                    class="form-control"
+                    rows="3"><?php echo htmlspecialchars($address); ?></textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Change Profile Image</label>
+
+                    <input type="file"
+                    name="image"
+                    class="form-control">
+                </div>
+
+                <button type="submit" class="edit-btn">
+                    <i class="bi bi-save"></i>
+                    Update Profile
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
 
 </div>
 
