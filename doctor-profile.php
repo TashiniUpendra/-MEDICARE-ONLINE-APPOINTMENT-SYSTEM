@@ -20,13 +20,6 @@ if (!$user) {
     die("Doctor not found!");
 }
 
-/* Success message */
-$success = "";
-
-if (isset($_GET["msg"]) && $_GET["msg"] == "success") {
-    $success = "Profile Updated Successfully!";
-}
-
 /* Doctor Image */
 $image = "uploads/" . $user["image"];
 
@@ -37,8 +30,13 @@ if (empty($user["image"]) || !file_exists($image)) {
 /* Values */
 $name = $user["name"] ?? "Doctor";
 $email = $user["email"] ?? "No Email";
-$specialization = $user["specialization"] ?? "";
-$address = $user["address"] ?? "";
+$specialization = $user["specialization"] ?? "Not Added";
+$address = $user["address"] ?? "Not Added";
+$phone = $user["phone"] ?? "Not Added";
+$gender = $user["gender"] ?? "Not Added";
+$experience = $user["experience"] ?? "0";
+$hospital = $user["hospital"] ?? "Not Added";
+$qualification = $user["qualification"] ?? "Not Added";
 $role = strtoupper($user["role"]);
 $status = "ACTIVE";
 ?>
@@ -51,13 +49,10 @@ $status = "ACTIVE";
 
 <title>Doctor Profile</title>
 
-<!-- Bootstrap -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<!-- Bootstrap Icons -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
-<!-- Google Font -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
@@ -68,10 +63,9 @@ $status = "ACTIVE";
 
 body{
     background:#eef6fb;
-    margin:0;
 }
 
-/* TOP BAR */
+/* TOPBAR */
 .topbar{
     background:linear-gradient(135deg,#0b78a6,#6dd5fa);
     padding:18px 35px;
@@ -79,12 +73,6 @@ body{
     display:flex;
     justify-content:space-between;
     align-items:center;
-    box-shadow:0 4px 15px rgba(0,0,0,0.1);
-}
-
-.topbar h3{
-    margin:0;
-    font-weight:600;
 }
 
 .back-btn{
@@ -94,50 +82,30 @@ body{
     padding:10px 18px;
     border-radius:10px;
     font-weight:600;
-    transition:0.3s;
 }
 
-.back-btn:hover{
-    background:#dff4ff;
-}
-
-/* MAIN */
 .main{
     padding:40px;
 }
 
-/* PROFILE HEADER */
+/* HEADER */
 .profile-header{
     background:linear-gradient(135deg,#0f172a,#1e293b);
     border-radius:20px;
     padding:40px;
     color:white;
-    position:relative;
-    overflow:hidden;
     margin-bottom:30px;
-    box-shadow:0 10px 30px rgba(0,0,0,0.1);
-}
-
-.profile-header::after{
-    content:'';
-    position:absolute;
-    top:-60px;
-    right:-60px;
-    width:260px;
-    height:260px;
-    background:rgba(255,255,255,0.08);
-    border-radius:50%;
 }
 
 .avatar{
-    width:120px;
-    height:120px;
+    width:130px;
+    height:130px;
     border-radius:50%;
     object-fit:cover;
     border:4px solid rgba(255,255,255,0.4);
-    box-shadow:0 8px 20px rgba(0,0,0,0.2);
 }
 
+/* BADGES */
 .badge-custom{
     display:inline-block;
     padding:8px 16px;
@@ -163,15 +131,10 @@ body{
     padding:30px;
     box-shadow:0 4px 15px rgba(0,0,0,0.08);
     height:100%;
-    transition:0.3s;
-}
-
-.info-card:hover{
-    transform:translateY(-5px);
 }
 
 .info-title{
-    font-size:20px;
+    font-size:22px;
     font-weight:600;
     margin-bottom:25px;
     color:#0b78a6;
@@ -196,60 +159,6 @@ body{
     color:#222;
 }
 
-/* FORM */
-.form-control{
-    border-radius:12px;
-    padding:12px;
-}
-
-.form-label{
-    font-weight:500;
-    margin-bottom:6px;
-}
-
-/* BUTTON */
-.edit-btn{
-    width:100%;
-    padding:14px;
-    border:none;
-    background:linear-gradient(135deg,#0b78a6,#118ac0);
-    color:white;
-    border-radius:12px;
-    font-weight:600;
-    font-size:16px;
-    transition:0.3s;
-}
-
-.edit-btn:hover{
-    background:linear-gradient(135deg,#095c80,#0b78a6);
-}
-
-/* SUCCESS */
-.success{
-    background:#d1fae5;
-    color:#065f46;
-    padding:15px;
-    border-radius:12px;
-    margin-bottom:20px;
-    font-weight:500;
-}
-
-/* ANIMATION */
-.fade-in{
-    animation:fadeIn 0.8s ease;
-}
-
-@keyframes fadeIn{
-    from{
-        opacity:0;
-        transform:translateY(20px);
-    }
-    to{
-        opacity:1;
-        transform:translateY(0);
-    }
-}
-
 </style>
 </head>
 
@@ -257,30 +166,29 @@ body{
 
 <!-- TOPBAR -->
 <div class="topbar">
-    <h3><i class="bi bi-heart-pulse-fill"></i> MediCare Doctor Panel</h3>
+
+    <h3>
+        <i class="bi bi-heart-pulse-fill"></i>
+        MediCare Doctor Panel
+    </h3>
 
     <a href="doctor-dashboard.php" class="back-btn">
-        <i class="bi bi-arrow-left"></i> Back Dashboard
+        <i class="bi bi-arrow-left"></i>
+        Back Dashboard
     </a>
+
 </div>
 
 <div class="main">
 
-<?php if($success): ?>
-<div class="success">
-    <i class="bi bi-check-circle-fill"></i>
-    <?php echo $success; ?>
-</div>
-<?php endif; ?>
-
 <!-- PROFILE HEADER -->
-<div class="profile-header fade-in">
+<div class="profile-header">
 
     <div class="d-flex flex-column flex-md-row align-items-center gap-4">
 
         <img src="<?php echo $image; ?>" class="avatar">
 
-        <div style="z-index:2;">
+        <div>
             <h2 class="fw-bold mb-1">
                 Dr. <?php echo htmlspecialchars($name); ?>
             </h2>
@@ -302,15 +210,16 @@ body{
         </div>
 
     </div>
+
 </div>
 
 <!-- CONTENT -->
 <div class="row g-4">
 
-    <!-- LEFT -->
-    <div class="col-lg-5">
+    <!-- LEFT SIDE -->
+    <div class="col-lg-6">
 
-        <div class="info-card fade-in">
+        <div class="info-card">
 
             <div class="info-title">
                 <i class="bi bi-person-lines-fill"></i>
@@ -318,7 +227,7 @@ body{
             </div>
 
             <div class="info-box">
-                <small>Full Name</small>
+                <small>Doctor Name</small>
                 <h6><?php echo htmlspecialchars($name); ?></h6>
             </div>
 
@@ -328,8 +237,13 @@ body{
             </div>
 
             <div class="info-box">
-                <small>Specialization</small>
-                <h6><?php echo htmlspecialchars($specialization); ?></h6>
+                <small>Phone Number</small>
+                <h6><?php echo htmlspecialchars($phone); ?></h6>
+            </div>
+
+            <div class="info-box">
+                <small>Gender</small>
+                <h6><?php echo htmlspecialchars($gender); ?></h6>
             </div>
 
             <div class="info-box">
@@ -341,91 +255,42 @@ body{
 
     </div>
 
-    <!-- RIGHT -->
-    <div class="col-lg-7">
+    <!-- RIGHT SIDE -->
+    <div class="col-lg-6">
 
-        <div class="info-card fade-in">
+        <div class="info-card">
 
             <div class="info-title">
-                <i class="bi bi-pencil-square"></i>
-                Update Profile
+                <i class="bi bi-hospital"></i>
+                Professional Details
             </div>
 
-            <form action="update_profile.php" method="POST" enctype="multipart/form-data">
+            <div class="info-box">
+                <small>Specialization</small>
+                <h6><?php echo htmlspecialchars($specialization); ?></h6>
+            </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Doctor Name</label>
+            <div class="info-box">
+                <small>Qualification</small>
+                <h6><?php echo htmlspecialchars($qualification); ?></h6>
+            </div>
 
-                    <input type="text"
-                    name="name"
-                    class="form-control"
-                    value="<?php echo htmlspecialchars($name); ?>"
-                    required>
-                </div>
+            <div class="info-box">
+                <small>Experience</small>
+                <h6><?php echo htmlspecialchars($experience); ?> Years</h6>
+            </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Email</label>
+            <div class="info-box">
+                <small>Hospital / Clinic</small>
+                <h6><?php echo htmlspecialchars($hospital); ?></h6>
+            </div>
 
-                    <input type="email"
-                    name="email"
-                    class="form-control"
-                    value="<?php echo htmlspecialchars($email); ?>"
-                    required>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Specialization</label>
-
-                    <select name="specialization"
-                    class="form-control"
-                    required>
-
-<option value="Cardiologist" <?php if($specialization=="Cardiologist") echo "selected"; ?>>Cardiologist</option>
-
-<option value="Neurologist" <?php if($specialization=="Neurologist") echo "selected"; ?>>Neurologist</option>
-
-<option value="Dermatologist" <?php if($specialization=="Dermatologist") echo "selected"; ?>>Dermatologist</option>
-
-<option value="Pediatrician" <?php if($specialization=="Pediatrician") echo "selected"; ?>>Pediatrician</option>
-
-<option value="Orthopedic" <?php if($specialization=="Orthopedic") echo "selected"; ?>>Orthopedic</option>
-
-<option value="ENT Specialist" <?php if($specialization=="ENT Specialist") echo "selected"; ?>>ENT Specialist</option>
-
-<option value="Psychiatrist" <?php if($specialization=="Psychiatrist") echo "selected"; ?>>Psychiatrist</option>
-
-<option value="Gynecologist" <?php if($specialization=="Gynecologist") echo "selected"; ?>>Gynecologist</option>
-
-<option value="Oncologist" <?php if($specialization=="Oncologist") echo "selected"; ?>>Oncologist</option>
-
-<option value="General Physician" <?php if($specialization=="General Physician") echo "selected"; ?>>General Physician</option>
-
-                    </select>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Address</label>
-
-                    <textarea
-                    name="address"
-                    class="form-control"
-                    rows="3"><?php echo htmlspecialchars($address); ?></textarea>
-                </div>
-
-                <div class="mb-4">
-                    <label class="form-label">Change Profile Image</label>
-
-                    <input type="file"
-                    name="image"
-                    class="form-control">
-                </div>
-
-                <button type="submit" class="edit-btn">
-                    <i class="bi bi-save"></i>
-                    Update Profile
-                </button>
-
-            </form>
+            <div class="info-box">
+                <small>Profile Status</small>
+                <h6 style="color:#10b981;">
+                    ACTIVE
+                </h6>
+            </div>
 
         </div>
 
@@ -435,7 +300,6 @@ body{
 
 </div>
 
-<!-- Bootstrap -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
