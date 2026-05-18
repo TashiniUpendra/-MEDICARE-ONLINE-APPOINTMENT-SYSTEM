@@ -31,6 +31,7 @@ if (empty($user["image"]) || !file_exists($image)) {
 $name = $user["name"] ?? "Doctor";
 $email = $user["email"] ?? "No Email";
 $specialization = $user["specialization"] ?? "Not Added";
+$address = $user["address"] ?? "";
 $role = strtoupper($user["role"]);
 $status = "ACTIVE";
 ?>
@@ -96,6 +97,16 @@ body{
 /* MAIN */
 .main{
     padding:40px;
+}
+
+/* SUCCESS MESSAGE */
+.success{
+    background:#d1fae5;
+    color:#065f46;
+    padding:15px;
+    border-radius:12px;
+    margin-bottom:20px;
+    font-weight:500;
 }
 
 /* PROFILE HEADER */
@@ -188,6 +199,16 @@ body{
     color:#222;
 }
 
+/* TEXTAREA */
+textarea{
+    width:100%;
+    border:1px solid #ddd;
+    border-radius:12px;
+    padding:15px;
+    resize:none;
+    margin-top:10px;
+}
+
 /* BUTTON */
 .edit-btn{
     width:100%;
@@ -236,6 +257,14 @@ body{
 </div>
 
 <div class="main">
+
+    <!-- SUCCESS MESSAGE -->
+    <?php if(isset($_GET['msg'])): ?>
+        <div class="success">
+            <i class="bi bi-check-circle-fill"></i>
+            Profile Updated Successfully!
+        </div>
+    <?php endif; ?>
 
     <!-- PROFILE HEADER -->
     <div class="profile-header fade-in">
@@ -297,6 +326,19 @@ body{
                 </div>
 
                 <div class="info-box">
+                    <small>Address</small>
+                    <h6>
+                        <?php
+                        if(!empty($address)){
+                            echo htmlspecialchars($address);
+                        } else {
+                            echo "No address added";
+                        }
+                        ?>
+                    </h6>
+                </div>
+
+                <div class="info-box">
                     <small>Account Status</small>
                     <h6 style="color:#10b981;">ACTIVE</h6>
                 </div>
@@ -312,33 +354,32 @@ body{
 
                 <div class="info-title">
                     <i class="bi bi-hospital"></i>
-                    Professional Summary
+                    Update Doctor Profile
                 </div>
 
-                <div class="info-box">
-                    <small>Doctor Role</small>
-                    <h6>MediCare Registered Doctor</h6>
-                </div>
+                <form action="update_profile.php" method="POST">
 
-                <div class="info-box">
-                    <small>Medical Specialty</small>
-                    <h6><?php echo htmlspecialchars($specialization); ?></h6>
-                </div>
+                    <div class="info-box">
+                        <small>Medical Specialty</small>
+                        <h6><?php echo htmlspecialchars($specialization); ?></h6>
+                    </div>
 
-                <div class="info-box">
-                    <small>Hospital System</small>
-                    <h6>MediCare Online Appointment System</h6>
-                </div>
+                    <div class="info-box">
+                        <small>Update Address</small>
 
-                <div class="info-box">
-                    <small>Profile Status</small>
-                    <h6>Your doctor profile is successfully active.</h6>
-                </div>
+                        <textarea
+                            name="address"
+                            rows="5"
+                            placeholder="Enter your clinic or home address..."
+                        ><?php echo htmlspecialchars($address); ?></textarea>
+                    </div>
 
-                <button class="edit-btn">
-                    <i class="bi bi-pencil-square"></i>
-                    Update Profile Soon
-                </button>
+                    <button type="submit" class="edit-btn">
+                        <i class="bi bi-check-circle-fill"></i>
+                        Update Profile
+                    </button>
+
+                </form>
 
             </div>
 
