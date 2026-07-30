@@ -15,18 +15,17 @@ if (!is_dir($uploadDir)) {
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-    $name  = $_POST["name"];
-    $email = $_POST["email"];
-    $password = password_hash($_POST["password"], PASSWORD_DEFAULT);
-    $role  = $_POST["role"];
-    $specialization = $_POST["specialization"] ?? "";
+    $name  = trim($_POST["name"] ?? '');
+    $email = trim($_POST["email"] ?? '');
+    $password = password_hash($_POST["password"] ?? '', PASSWORD_DEFAULT);
+    $role  = $_POST["role"] ?? '';
+    $specialization = $_POST["specialization"] ?? '';
 
     $imageName = "";
 
     /* Doctor image upload */
     if ($role === "doctor" && !empty($_FILES["image"]["name"])) {
-
-        $fileName = time() . "_" . $_FILES["image"]["name"];
+        $fileName = time() . "_" . basename($_FILES["image"]["name"]);
         $targetFile = $uploadDir . $fileName;
 
         if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile)) {
@@ -34,137 +33,36 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
     }
 
-    if ($name && $email && $password && $role) {
+    if ($name && $email && $_POST["password"] && $role) {
 
-        $check = mysqli_query($conn, "SELECT * FROM users WHERE email='$email'");
+        // Use Prepared Statement to check email existence
+        $checkStmt = mysqli_prepare($conn, "SELECT id FROM users WHERE email = ?");
+        mysqli_stmt_bind_param($checkStmt, "s", $email);
+        mysqli_stmt_execute($checkStmt);
+        mysqli_stmt_store_result($checkStmt);
 
-        if (mysqli_num_rows($check) > 0) {
+        if (mysqli_stmt_num_rows($checkStmt) > 0) {
             $error = "Email already exists!";
         } else {
+            mysqli_stmt_close($checkStmt);
 
-            $sql = "INSERT INTO users (name,email,password,role,image,specialization)
-                    VALUES ('$name','$email','$password','$role','$imageName','$specialization')";
+            // Use Prepared Statement to insert secure data
+            $insertStmt = mysqli_prepare(
+                $conn, 
+                "INSERT INTO users (name, email, password, role, image, specialization) VALUES (?, ?, ?, ?, ?, ?)"
+            );
+            mysqli_stmt_bind_param($insertStmt, "ssssss", $name, $email, $password, $role, $imageName, $specialization);
 
-            if (mysqli_query($conn, $sql)) {
+            if (mysqli_stmt_execute($insertStmt)) {
                 $success = "Registration successful!";
             } else {
-                $error = "Error: " . mysqli_error($conn);
+                $error = "Error: " . mysqli_stmt_error($insertStmt);
             }
+            mysqli_stmt_close($insertStmt);
         }
 
     } else {
-        $error = "Fill all fields!";
+        $error = "Please fill in all required fields!";
     }
 }
 ?>
-
-<!DOCTYPE html>
-<html>
-<head>
-<title>Register</title>
-
-<style>
-body{
-    background:#f0faff;
-    font-family:Arial;
-}
-.container{
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
-}
-.box{
-    background:#fff;
-    padding:30px;
-    border-radius:10px;
-    width:350px;
-}
-input,select{
-    width:100%;
-    padding:10px;
-    margin-top:8px;
-}
-button{
-    margin-top:15px;
-    width:100%;
-    padding:10px;
-    background:#0b78a6;
-    color:#fff;
-    border:none;
-}
-</style>
-
-<script>
-function showDoctorFields() {
-    let role = document.getElementById("role").value;
-
-    document.getElementById("imageField").style.display =
-        (role === "doctor") ? "block" : "none";
-
-    document.getElementById("specField").style.display =
-        (role === "doctor") ? "block" : "none";
-}
-</script>
-
-</head>
-
-<body>
-
-<div class="container">
-<div class="box">
-
-<h2>Register</h2>
-
-<?php if ($error) echo "<p style='color:red'>$error</p>"; ?>
-<?php if ($success) echo "<p style='color:green'>$success</p>"; ?>
-
-<form method="POST" enctype="multipart/form-data">
-
-<input type="text" name="name" placeholder="Name" required>
-<input type="email" name="email" placeholder="Email" required>
-<input type="password" name="password" placeholder="Password" required>
-
-<select name="role" id="role" onchange="showDoctorFields()" required>
-<option value="">Select Role</option>
-<option value="admin">Admin</option>
-<option value="doctor">Doctor</option>
-<option value="patient">Patient</option>
-</select>
-
-<!-- 🔥 Specialization -->
-<div id="specField" style="display:none;">
-<select name="specialization">
-<option value="">-- Select Specialization --</option>
-
-<option>General Physician</option>
-<option>Cardiologist</option>
-<option>Dermatologist</option>
-<option>Neurologist</option>
-<option>Pediatrician</option>
-<option>Orthopedic Surgeon</option>
-<option>Gynecologist</option>
-<option>ENT Specialist</option>
-<option>Psychiatrist</option>
-<option>Dentist</option>
-<option>Ophthalmologist</option>
-
-</select>
-</div>
-
-<!-- 🔥 Image -->
-<div id="imageField" style="display:none;">
-<input type="file" name="image" accept="image/*">
-</div>
-
-<button type="submit">Register</button>
-
-</form>
-
-<p><a href="login.php">Login</a></p>
-
-</div>
-</div>
-
-</body>
-</html>
