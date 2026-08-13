@@ -1,5 +1,6 @@
 <?php
 session_start();
+include "db.php"; // Database Connection
 
 /* Login check */
 if (!isset($_SESSION["role"]) || $_SESSION["role"] !== "patient") {
@@ -13,6 +14,10 @@ $patientEmail = $_SESSION["email"] ?? "";
 
 /* Get doctor from URL */
 $selectedDoctor = $_GET["doctor"] ?? "";
+
+/* Fetch Dynamic Doctors safely from Database */
+$doctors_query = "SELECT * FROM users WHERE role = 'doctor' ORDER BY name ASC";
+$doctors_result = mysqli_query($conn, $doctors_query);
 
 /* Handle form submit */
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -35,11 +40,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Book Appointment</title>
 
 <style>
 body{
-    font-family: Arial;
+    font-family: Arial, sans-serif;
     background:#f0faff;
 }
 
@@ -76,6 +82,7 @@ input, select, textarea{
     padding:10px;
     border-radius:6px;
     border:1px solid #ccc;
+    box-sizing: border-box;
 }
 
 textarea{
@@ -92,6 +99,7 @@ textarea{
     border:none;
     border-radius:6px;
     cursor:pointer;
+    font-weight: bold;
 }
 
 .btn:hover{
@@ -121,32 +129,35 @@ value="<?php echo htmlspecialchars($patientName); ?>" required>
 value="<?php echo htmlspecialchars($patientEmail); ?>" required>
 </div>
 
-<!-- Doctor -->
+<!-- Doctor (Dynamic Database Dropdown) -->
 <div class="form-group">
 <label>Select Doctor</label>
-<select name="doctor" required>
+<select name="doctor" id="doctorSelect" onchange="updateDoctorTime()" required>
 
-<option value="">-- Select Doctor --</option>
+<option value="" data-time="">-- Select Doctor --</option>
 
-<option value="Dr. John Silva"
-<?php if($selectedDoctor=="Dr. John Silva") echo "selected"; ?>>
-Dr. John Silva (Cardiologist)
-</option>
+<?php 
+if ($doctors_result && mysqli_num_rows($doctors_result) > 0) {
+    while ($doc = mysqli_fetch_assoc($doctors_result)) {
+        // Fix Name Duplicate Issue
+        $doc_name = $doc['name'];
+        if (strpos($doc_name, 'Dr.') === false) {
+            $doc_name = "Dr. " . $doc_name;
+        }
 
-<option value="Dr. Maya Fernando"
-<?php if($selectedDoctor=="Dr. Maya Fernando") echo "selected"; ?>>
-Dr. Maya Fernando (Dermatologist)
-</option>
-
-<option value="Dr. Ruwan Perera"
-<?php if($selectedDoctor=="Dr. Ruwan Perera") echo "selected"; ?>>
-Dr. Ruwan Perera (Neurologist)
-</option>
-
-<option value="Dr. Nadeesha Karun"
-<?php if($selectedDoctor=="Dr. Nadeesha Karun") echo "selected"; ?>>
-Dr. Nadeesha Karun (Pediatrician)
-</option>
+        // Available Time (DB එකේ 'available_time' හෝ 'time' column එකක් නැත්නම් Default time එකක් වැටේ)
+        $doc_time = !empty($doc['available_time']) ? $doc['available_time'] : "16:30"; // Default 04:30 PM
+        
+        // Specialization Label Check
+        $spec = (!empty($doc['specialization'])) ? " (" . $doc['specialization'] . ")" : "";
+        
+        // Match check with URL parameter
+        $isSelected = ($selectedDoctor == $doc_name || $selectedDoctor == $doc['name']) ? "selected" : "";
+        
+        echo "<option value='" . htmlspecialchars($doc_name) . "' data-time='" . htmlspecialchars($doc_time) . "' $isSelected>" . htmlspecialchars($doc_name . $spec) . "</option>";
+    }
+}
+?>
 
 </select>
 </div>
@@ -157,22 +168,45 @@ Dr. Nadeesha Karun (Pediatrician)
 <input type="date" name="date" required>
 </div>
 
-<!-- Time -->
+<!-- Time (Auto-filled on Doctor Select) -->
 <div class="form-group">
 <label>Appointment Time</label>
-<input type="time" name="time" required>
+<input type="time" name="time" id="appointmentTime" required>
 </div>
 
 <!-- Reason -->
 <div class="form-group">
 <label>Reason for Visit</label>
-<textarea name="reason" placeholder="Enter reason"></textarea>
+<textarea name="reason" rows="3" placeholder="Enter reason"></textarea>
 </div>
 
 <button type="submit" class="btn">Confirm Appointment</button>
 
 </form>
 </div>
+
+<!-- JavaScript for Auto-filling Time -->
+<script>
+function updateDoctorTime() {
+    var doctorSelect = document.getElementById("doctorSelect");
+    var timeInput = document.getElementById("appointmentTime");
+    
+    // Select කරපු Option එකේ data-time attribute එක ලබාගැනීම
+    var selectedOption = doctorSelect.options[doctorSelect.selectedIndex];
+    var doctorTime = selectedOption.getAttribute("data-time");
+    
+    if (doctorTime) {
+        timeInput.value = doctorTime;
+    } else {
+        timeInput.value = "";
+    }
+}
+
+// Page එක Load වෙද්දි කලින්ම Doctor කෙනෙක් Select වෙලා හිටියොත් Time එක Auto set කිරීමට
+window.onload = function() {
+    updateDoctorTime();
+};
+</script>
 
 </body>
 </html>
