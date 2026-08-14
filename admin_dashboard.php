@@ -10,7 +10,7 @@ if (!isset($_SESSION["role"]) || $_SESSION["role"] !== "admin") {
 
 $admin_name = $_SESSION["name"] ?? "Admin";
 
-// Fetch Counts for Cards
+// Fetch Counts for Dashboard Cards
 $total_doctors_query = mysqli_query($conn, "SELECT COUNT(*) AS total FROM users WHERE role = 'doctor'");
 $total_doctors = mysqli_fetch_assoc($total_doctors_query)['total'] ?? 0;
 
@@ -23,12 +23,18 @@ $total_appointments = mysqli_fetch_assoc($total_appointments_query)['total'] ?? 
 $pending_requests_query = mysqli_query($conn, "SELECT COUNT(*) AS total FROM appointments WHERE status = 'pending'");
 $pending_requests = mysqli_fetch_assoc($pending_requests_query)['total'] ?? 0;
 
-// Fetch Recent Appointments with Patient and Doctor Names
-$recent_query = "SELECT a.id, p.name AS patient_name, d.name AS doctor_name, a.appointment_date, a.appointment_time, a.status 
-                FROM appointments a
-                LEFT JOIN users p ON a.patient_id = p.id
-                LEFT JOIN users d ON a.doctor_id = d.id
-                ORDER BY a.id DESC LIMIT 5";
+// Fetch Recent Appointments (Check users, doctors, and appointments tables for Doctor Name)
+$recent_query = "SELECT a.id, 
+                        p.name AS patient_name, 
+                        COALESCE(d.name, doc.name, a.doctor_name, 'N/A') AS doctor_name, 
+                        a.appointment_date, 
+                        a.appointment_time, 
+                        a.status 
+                 FROM appointments a
+                 LEFT JOIN users p ON a.patient_id = p.id
+                 LEFT JOIN users d ON a.doctor_id = d.id
+                 LEFT JOIN doctors doc ON a.doctor_id = doc.id
+                 ORDER BY a.id DESC LIMIT 5";
 
 $recent_result = mysqli_query($conn, $recent_query);
 ?>
@@ -95,7 +101,7 @@ $recent_result = mysqli_query($conn, $recent_query);
         /* Status Badges */
         .badge { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-block; text-transform: capitalize; }
         .badge.pending { background: #ffedd5; color: #c2410c; }
-        .badge.approved { background: #dcfce7; color: #15803d; }
+        .badge.approved, .badge.confirmed { background: #dcfce7; color: #15803d; }
         .badge.cancelled { background: #fee2e2; color: #b91c1c; }
     </style>
 </head>
@@ -199,7 +205,7 @@ $recent_result = mysqli_query($conn, $recent_query);
                             <tr>
                                 <td>#<?php echo htmlspecialchars($row['id']); ?></td>
                                 <td><?php echo htmlspecialchars($row['patient_name'] ?? 'N/A'); ?></td>
-                                <td><?php echo htmlspecialchars($row['doctor_name'] ?? 'N/A'); ?></td>
+                                <td><?php echo htmlspecialchars($row['doctor_name']); ?></td>
                                 <td><?php echo htmlspecialchars($row['appointment_date']); ?></td>
                                 <td><?php echo htmlspecialchars($row['appointment_time']); ?></td>
                                 <td>
