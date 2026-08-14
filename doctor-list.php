@@ -2,24 +2,28 @@
 session_start();
 include "db.php";
 
-/* Only patient can access */
-if (!isset($_SESSION["role"]) || $_SESSION["role"] !== "patient") {
-    header("Location: login.php");
-    exit();
-}
-
 /* Search functionality */
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 
-/* Fetch Doctors from Database */
+/* Fetch Doctors and their Specialization using LEFT JOIN */
 if (!empty($search)) {
-    $stmt = $conn->prepare("SELECT id, name, email FROM users WHERE role = 'doctor' AND name LIKE ?");
+    $stmt = $conn->prepare("
+        SELECT u.id, u.name, u.email, d.specialization, d.image 
+        FROM users u 
+        LEFT JOIN doctors d ON u.email = d.email 
+        WHERE u.role = 'doctor' AND u.name LIKE ?
+    ");
     $searchTerm = "%" . $search . "%";
     $stmt->bind_param("s", $searchTerm);
     $stmt->execute();
     $result = $stmt->get_result();
 } else {
-    $result = $conn->query("SELECT id, name, email FROM users WHERE role = 'doctor'");
+    $result = $conn->query("
+        SELECT u.id, u.name, u.email, d.specialization, d.image 
+        FROM users u 
+        LEFT JOIN doctors d ON u.email = d.email 
+        WHERE u.role = 'doctor'
+    ");
 }
 
 /* Doctors list */
@@ -29,17 +33,11 @@ if ($result && $result->num_rows > 0) {
         $doctors[] = [
             "id" => $row["id"],
             "name" => $row["name"],
-            "specialty" => "General Physician" // Default specialty
+            // Specialization එක Database එකෙන් ගනී (නැත්නම් General Physician ලෙස වැටේ)
+            "specialty" => !empty($row["specialization"]) ? $row["specialization"] : "General Physician",
+            "image" => !empty($row["image"]) ? $row["image"] : null
         ];
     }
-} else if (empty($search)) {
-    // Fallback demo list if no doctors in database
-    $doctors = [
-        ["id" => 1, "name" => "Dr. John Silva", "specialty" => "Cardiologist"],
-        ["id" => 2, "name" => "Dr. Maya Fernando", "specialty" => "Dermatologist"],
-        ["id" => 3, "name" => "Dr. Ruwan Perera", "specialty" => "Neurologist"],
-        ["id" => 4, "name" => "Dr. Nadeesha Karun", "specialty" => "Pediatrician"]
-    ];
 }
 ?>
 
@@ -79,13 +77,16 @@ body { display: flex; background-color: #f4f7fe; color: #333; min-height: 100vh;
 .search-btn:hover { background: #085a7d; }
 
 /* Doctors Grid */
-.doctors-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+.doctors-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
 .doctor-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); text-align: center; transition: 0.3s; display: flex; flex-direction: column; align-items: center; }
 .doctor-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
 
-.doctor-avatar { width: 70px; height: 70px; background: #e0f2fe; color: #0b78a6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 15px; }
-.doctor-name { font-size: 18px; font-weight: 600; color: #1e293b; margin-bottom: 5px; }
-.doctor-specialty { font-size: 13px; color: #0b78a6; background: #e0f2fe; padding: 4px 12px; border-radius: 20px; font-weight: 500; margin-bottom: 20px; display: inline-block; }
+/* Profile Photo Styling */
+.doctor-avatar { width: 85px; height: 85px; border-radius: 50%; object-fit: cover; border: 3px solid #e0f2fe; margin-bottom: 15px; }
+.doctor-avatar-icon { width: 85px; height: 85px; background: #e0f2fe; color: #0b78a6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; margin-bottom: 15px; }
+
+.doctor-name { font-size: 17px; font-weight: 600; color: #1e293b; margin-bottom: 5px; }
+.doctor-specialty { font-size: 12px; color: #0b78a6; background: #e0f2fe; padding: 4px 12px; border-radius: 20px; font-weight: 500; margin-bottom: 20px; display: inline-block; }
 
 .btn-book { display: inline-block; width: 100%; background: #0b78a6; color: white; padding: 10px; border-radius: 8px; text-decoration: none; font-size: 13px; font-weight: 600; transition: 0.3s; }
 .btn-book:hover { background: #085a7d; }
@@ -102,14 +103,23 @@ body { display: flex; background-color: #f4f7fe; color: #333; min-height: 100vh;
                 <i class="fa-solid fa-heart-pulse"></i> MediCare
             </div>
             <ul class="sidebar-menu">
-                <li><a href="patient-dashboard.php"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+                <li><a href="home.php"><i class="fa-solid fa-house"></i> Home</a></li>
+                <?php if (isset($_SESSION["role"]) && $_SESSION["role"] === "patient"): ?>
+                    <li><a href="patient-dashboard.php"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+                <?php endif; ?>
                 <li><a href="doctor-list.php" class="active"><i class="fa-solid fa-user-doctor"></i> Book Appointment</a></li>
-                <li><a href="appointment-history.php"><i class="fa-solid fa-calendar-check"></i> My Appointments</a></li>
-                <li><a href="profile.php"><i class="fa-solid fa-user-gear"></i> Profile</a></li>
+                <?php if (isset($_SESSION["role"]) && $_SESSION["role"] === "patient"): ?>
+                    <li><a href="appointment-history.php"><i class="fa-solid fa-calendar-check"></i> My Appointments</a></li>
+                    <li><a href="profile.php"><i class="fa-solid fa-user-gear"></i> Profile</a></li>
+                <?php endif; ?>
             </ul>
         </div>
         <div>
-            <a href="logout.php" style="color: #f87171; text-decoration:none;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+            <?php if (isset($_SESSION["role"])): ?>
+                <a href="logout.php" style="color: #f87171; text-decoration:none;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+            <?php else: ?>
+                <a href="login.php" style="color: #6dd5fa; text-decoration:none;"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
+            <?php endif; ?>
         </div>
     </div>
 
@@ -136,13 +146,20 @@ body { display: flex; background-color: #f4f7fe; color: #333; min-height: 100vh;
             <?php if (!empty($doctors)): ?>
                 <?php foreach($doctors as $doc): ?>
                 <div class="doctor-card">
-                    <div class="doctor-avatar">
-                        <i class="fa-solid fa-user-md"></i>
-                    </div>
+                    
+                    <!-- Check if photo exists in uploads folder -->
+                    <?php if (!empty($doc['image']) && file_exists('uploads/' . $doc['image'])): ?>
+                        <img src="uploads/<?php echo htmlspecialchars($doc['image']); ?>" alt="Doctor Photo" class="doctor-avatar">
+                    <?php else: ?>
+                        <div class="doctor-avatar-icon">
+                            <i class="fa-solid fa-user-md"></i>
+                        </div>
+                    <?php endif; ?>
+
                     <div class="doctor-name"><?php echo htmlspecialchars($doc["name"]); ?></div>
                     <span class="doctor-specialty"><i class="fa-solid fa-stethoscope"></i> <?php echo htmlspecialchars($doc["specialty"]); ?></span>
                     
-                    <a href="appointment-booking.php?doctor_id=<?php echo $doc['id'] ?? 0; ?>&doctor=<?php echo urlencode($doc["name"]); ?>" class="btn-book">
+                    <a href="appointment-booking.php?doctor_id=<?php echo $doc['id']; ?>&doctor=<?php echo urlencode($doc["name"]); ?>" class="btn-book">
                         <i class="fa-solid fa-calendar-plus"></i> Book Appointment
                     </a>
                 </div>
