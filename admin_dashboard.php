@@ -23,12 +23,14 @@ $total_appointments = mysqli_fetch_assoc($total_appointments_query)['total'] ?? 
 $pending_requests_query = mysqli_query($conn, "SELECT COUNT(*) AS total FROM appointments WHERE status = 'pending'");
 $pending_requests = mysqli_fetch_assoc($pending_requests_query)['total'] ?? 0;
 
-// Fetch Recent Appointments (Check users, doctors, and appointments tables for Doctor Name)
+// Fetch Recent Appointments (Including Room No and Payment Details)
 $recent_query = "SELECT a.id, 
                         p.name AS patient_name, 
                         COALESCE(d.name, doc.name, a.doctor_name, 'N/A') AS doctor_name, 
                         a.appointment_date, 
                         a.appointment_time, 
+                        a.room_no,
+                        a.payment_status,
                         a.status 
                  FROM appointments a
                  LEFT JOIN users p ON a.patient_id = p.id
@@ -101,8 +103,9 @@ $recent_result = mysqli_query($conn, $recent_query);
         /* Status Badges */
         .badge { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-block; text-transform: capitalize; }
         .badge.pending { background: #ffedd5; color: #c2410c; }
-        .badge.approved, .badge.confirmed { background: #dcfce7; color: #15803d; }
+        .badge.approved, .badge.confirmed, .badge.paid { background: #dcfce7; color: #15803d; }
         .badge.cancelled { background: #fee2e2; color: #b91c1c; }
+        .badge.room { background: #e0f2fe; color: #0284c7; font-weight: 600; }
     </style>
 </head>
 <body>
@@ -116,6 +119,7 @@ $recent_result = mysqli_query($conn, $recent_query);
             <ul class="sidebar-menu">
                 <li><a href="admin-dashboard.php" class="active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
                 <li><a href="manage-doctors.php"><i class="fa-solid fa-user-doctor"></i> Manage Doctors</a></li>
+                <li><a href="manage-schedules.php"><i class="fa-solid fa-calendar-days"></i> Doctor Schedules</a></li>
                 <li><a href="patient-records.php"><i class="fa-solid fa-bed-pulse"></i> Patient Records</a></li>
                 <li><a href="appointments.php"><i class="fa-solid fa-calendar-check"></i> Appointments</a></li>
             </ul>
@@ -194,8 +198,9 @@ $recent_result = mysqli_query($conn, $recent_query);
                         <th>ID</th>
                         <th>Patient</th>
                         <th>Doctor</th>
-                        <th>Date</th>
-                        <th>Time</th>
+                        <th>Room</th>
+                        <th>Date & Time</th>
+                        <th>Payment</th>
                         <th>Status</th>
                     </tr>
                 </thead>
@@ -206,8 +211,20 @@ $recent_result = mysqli_query($conn, $recent_query);
                                 <td>#<?php echo htmlspecialchars($row['id']); ?></td>
                                 <td><?php echo htmlspecialchars($row['patient_name'] ?? 'N/A'); ?></td>
                                 <td><?php echo htmlspecialchars($row['doctor_name']); ?></td>
-                                <td><?php echo htmlspecialchars($row['appointment_date']); ?></td>
-                                <td><?php echo htmlspecialchars($row['appointment_time']); ?></td>
+                                <td>
+                                    <span class="badge room">
+                                        <?php echo htmlspecialchars($row['room_no'] ?? 'N/A'); ?>
+                                    </span>
+                                </td>
+                                <td><?php echo htmlspecialchars($row['appointment_date']) . ' (' . htmlspecialchars($row['appointment_time']) . ')'; ?></td>
+                                <td>
+                                    <?php 
+                                        $pay_status = strtolower($row['payment_status'] ?? 'pending'); 
+                                    ?>
+                                    <span class="badge <?php echo $pay_status; ?>">
+                                        <?php echo ucfirst($pay_status); ?>
+                                    </span>
+                                </td>
                                 <td>
                                     <?php 
                                         $status = strtolower($row['status']); 
@@ -221,7 +238,7 @@ $recent_result = mysqli_query($conn, $recent_query);
                         <?php endwhile; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="6" style="text-align:center; padding:30px; color:#64748b;">
+                            <td colspan="7" style="text-align:center; padding:30px; color:#64748b;">
                                 No recent appointments found.
                             </td>
                         </tr>
