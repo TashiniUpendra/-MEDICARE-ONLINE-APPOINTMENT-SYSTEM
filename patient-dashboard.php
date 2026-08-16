@@ -9,32 +9,43 @@ if (!isset($_SESSION["role"]) || $_SESSION["role"] !== "patient") {
 }
 
 /* Get patient info */
-$patientId = $_SESSION["id"] ?? 0;
+$patientId = $_SESSION["user_id"] ?? $_SESSION["id"] ?? 0;
 $patientName = $_SESSION["name"] ?? "Patient";
 
 /* Fetch Summary Stats for Patient */
 $total_appointments = 0;
 $pending_appointments = 0;
 $confirmed_appointments = 0;
+$unread_notif_count = 0;
 
 if ($patientId) {
+    // Total Appointments Count
     $stmt1 = $conn->prepare("SELECT COUNT(*) as count FROM appointments WHERE patient_id = ?");
     $stmt1->bind_param("i", $patientId);
     $stmt1->execute();
     $total_appointments = $stmt1->get_result()->fetch_assoc()['count'] ?? 0;
     $stmt1->close();
 
+    // Pending Appointments Count
     $stmt2 = $conn->prepare("SELECT COUNT(*) as count FROM appointments WHERE patient_id = ? AND status = 'Pending'");
     $stmt2->bind_param("i", $patientId);
     $stmt2->execute();
     $pending_appointments = $stmt2->get_result()->fetch_assoc()['count'] ?? 0;
     $stmt2->close();
 
+    // Confirmed Appointments Count
     $stmt3 = $conn->prepare("SELECT COUNT(*) as count FROM appointments WHERE patient_id = ? AND status = 'Confirmed'");
     $stmt3->bind_param("i", $patientId);
     $stmt3->execute();
     $confirmed_appointments = $stmt3->get_result()->fetch_assoc()['count'] ?? 0;
     $stmt3->close();
+
+    // Fetch Unread Notifications Count
+    $stmt4 = $conn->prepare("SELECT COUNT(*) as count FROM notifications WHERE user_id = ? AND is_read = 0");
+    $stmt4->bind_param("i", $patientId);
+    $stmt4->execute();
+    $unread_notif_count = $stmt4->get_result()->fetch_assoc()['count'] ?? 0;
+    $stmt4->close();
 }
 ?>
 
@@ -58,12 +69,19 @@ body { display: flex; background-color: #f4f7fe; color: #333; min-height: 100vh;
 .sidebar .brand { font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 10px; margin-bottom: 30px; }
 .sidebar-menu { list-style: none; }
 .sidebar-menu li { margin-bottom: 10px; }
-.sidebar-menu a { display: flex; align-items: center; gap: 12px; color: #e0f2fe; text-decoration: none; padding: 12px 15px; border-radius: 8px; font-weight: 500; transition: 0.3s; }
+.sidebar-menu a { display: flex; align-items: center; gap: 12px; color: #e0f2fe; text-decoration: none; padding: 12px 15px; border-radius: 8px; font-weight: 500; transition: 0.3s; position: relative; }
 .sidebar-menu a:hover, .sidebar-menu a.active { background: rgba(255, 255, 255, 0.2); color: #fff; }
+
+/* Notification Badge */
+.badge { background: #ef4444; color: white; border-radius: 20px; padding: 2px 8px; font-size: 11px; font-weight: 700; margin-left: auto; }
 
 /* Main Content Area */
 .main-content { flex: 1; padding: 30px; overflow-y: auto; }
 .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+
+/* Header Notification Icon */
+.notif-btn { position: relative; font-size: 20px; color: #0b78a6; background: white; width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+.notif-btn-badge { position: absolute; top: -2px; right: -2px; background: #ef4444; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; font-weight: bold; display: flex; align-items: center; justify-content: center; }
 
 /* Welcome Card */
 .welcome-card { background: linear-gradient(135deg, #0b78a6, #0284c7); color: white; padding: 25px; border-radius: 12px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; }
@@ -81,7 +99,7 @@ body { display: flex; background-color: #f4f7fe; color: #333; min-height: 100vh;
 .stat-info p { font-size: 12px; color: #64748b; }
 
 /* Dashboard Actions Grid */
-.actions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+.actions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
 .action-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); text-align: center; transition: 0.3s; }
 .action-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
 .action-card i { font-size: 36px; color: #0b78a6; margin-bottom: 15px; }
@@ -106,6 +124,14 @@ body { display: flex; background-color: #f4f7fe; color: #333; min-height: 100vh;
                 <li><a href="patient-dashboard.php" class="active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
                 <li><a href="doctor-list.php"><i class="fa-solid fa-user-doctor"></i> Book Appointment</a></li>
                 <li><a href="appointment-history.php"><i class="fa-solid fa-calendar-check"></i> My Appointments</a></li>
+                <li>
+                    <a href="notifications.php">
+                        <i class="fa-solid fa-bell"></i> Notifications
+                        <?php if ($unread_notif_count > 0): ?>
+                            <span class="badge"><?php echo $unread_notif_count; ?></span>
+                        <?php endif; ?>
+                    </a>
+                </li>
                 <li><a href="profile.php"><i class="fa-solid fa-user-gear"></i> Profile</a></li>
             </ul>
         </div>
@@ -119,8 +145,18 @@ body { display: flex; background-color: #f4f7fe; color: #333; min-height: 100vh;
         
         <div class="header">
             <h2>Patient Portal</h2>
-            <div style="font-size: 13px; color: #64748b;">
-                <i class="fa-solid fa-calendar-day"></i> <?php echo date("l, F j, Y"); ?>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <!-- Notifications Bell Icon -->
+                <a href="notifications.php" class="notif-btn" title="View Notifications">
+                    <i class="fa-solid fa-bell"></i>
+                    <?php if ($unread_notif_count > 0): ?>
+                        <span class="notif-btn-badge"><?php echo $unread_notif_count; ?></span>
+                    <?php endif; ?>
+                </a>
+                
+                <div style="font-size: 13px; color: #64748b;">
+                    <i class="fa-solid fa-calendar-day"></i> <?php echo date("l, F j, Y"); ?>
+                </div>
             </div>
         </div>
 
@@ -184,17 +220,17 @@ body { display: flex; background-color: #f4f7fe; color: #333; min-height: 100vh;
             </div>
 
             <div class="action-card">
+                <i class="fa-solid fa-bell"></i>
+                <h3>Notifications</h3>
+                <p>Check your appointment updates and system alerts.</p>
+                <a href="notifications.php" class="btn">View Notifications</a>
+            </div>
+
+            <div class="action-card">
                 <i class="fa-solid fa-id-card"></i>
                 <h3>My Profile</h3>
                 <p>View and edit your personal details and account settings.</p>
                 <a href="profile.php" class="btn">View Profile</a>
-            </div>
-
-            <div class="action-card">
-                <i class="fa-solid fa-right-from-bracket" style="color:#ef4444;"></i>
-                <h3>Logout</h3>
-                <p>Safely log out from your patient account.</p>
-                <a href="logout.php" class="btn btn-logout">Logout</a>
             </div>
 
         </div>
