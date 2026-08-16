@@ -16,7 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['book_appointment'])) {
     $doctor_id = $_POST['doctor_id'];
     $appointment_date = $_POST['appointment_date'];
     $schedule_id = $_POST['schedule_id'];
-    $reason = mysqli_real_escape_string($conn, $_POST['reason']); // Reason Input
+    $reason = mysqli_real_escape_string($conn, $_POST['reason']);
 
     // Fetch schedule details
     $sched_stmt = $conn->prepare("SELECT start_time, room_no FROM doctor_schedules WHERE id = ?");
@@ -30,12 +30,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['book_appointment'])) {
         $status = 'pending';
         $payment_status = 'pending';
 
-        // Updated Query: Insert reason column into appointments table
         $stmt = $conn->prepare("INSERT INTO appointments (patient_id, doctor_id, appointment_date, appointment_time, room_no, reason, status, payment_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
         $stmt->bind_param("iissssss", $patient_id, $doctor_id, $appointment_date, $appointment_time, $room_no, $reason, $status, $payment_status);
 
         if ($stmt->execute()) {
+            $appointment_id = $stmt->insert_id;
             $success = "Appointment booked successfully! Pending confirmation.";
+
+            // 1. Patient ට Notification එකක් එකතු කිරීම
+            $notif_patient = "Your appointment (#$appointment_id) has been submitted successfully and is pending confirmation.";
+            $n1 = $conn->prepare("INSERT INTO notifications (user_id, message) VALUES (?, ?)");
+            $n1->bind_param("is", $patient_id, $notif_patient);
+            $n1->execute();
+
+            // 2. Doctor ට Notification එකක් එකතු කිරීම
+            $notif_doc = "You have received a new appointment booking request (#$appointment_id) for $appointment_date.";
+            $n2 = $conn->prepare("INSERT INTO notifications (user_id, message) VALUES (?, ?)");
+            $n2->bind_param("is", $doctor_id, $notif_doc);
+            $n2->execute();
         } else {
             $error = "Error booking appointment: " . $conn->error;
         }
@@ -119,7 +131,7 @@ $doctors = $conn->query("SELECT id, name, specialization FROM users WHERE role =
         <!-- Reason / Symptoms Field -->
         <div class="form-group">
             <label>Reason for Appointment:</label>
-            <textarea name="reason" rows="3" placeholder="e.g. Medical Advice, Regular Checkup, Fever, Headache..." required></textarea>
+            <textarea name="reason" rows="3" placeholder="e.g. Medical Advice, Regular Checkup, Fever..." required></textarea>
         </div>
 
         <!-- Auto Loaded Details Box -->
