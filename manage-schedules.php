@@ -2,6 +2,12 @@
 session_start();
 include "db.php";
 
+// Admin ට විතරක් Access ලබා දීම (Security Check)
+if (!isset($_SESSION["role"]) || $_SESSION["role"] !== "admin") {
+    header("Location: login.php");
+    exit();
+}
+
 // Schedule එකක් එකතු කිරීම
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_schedule'])) {
     $doctor_id = $_POST['doctor_id'];
@@ -23,13 +29,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_schedule'])) {
 
 // Schedule එකක් Delete කිරීම
 if (isset($_GET['delete'])) {
-    $id = $_GET['delete'];
+    $id = (int)$_GET['delete'];
     $conn->query("DELETE FROM doctor_schedules WHERE id = $id");
     header("Location: manage-schedules.php");
     exit();
 }
 
-// Doctors ලාගේ ලැයිස්තුව ගෙන ඒම
+// System එකේ ඉන්න Doctors ලාගේ ලැයිස්තුව ගෙන ඒම
 $doctors = $conn->query("SELECT id, name FROM users WHERE role = 'doctor'");
 
 // දැනට තියෙන Schedules ගෙන ඒම
@@ -45,7 +51,7 @@ $schedules = $conn->query("
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Manage Doctor Schedules | MediCare</title>
+    <title>Manage Doctor Schedules | MediCare Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -65,12 +71,14 @@ $schedules = $conn->query("
         th { background:#f8fafc; color:#64748b; }
         .btn-delete { color:#ef4444; text-decoration:none; font-weight:600; }
         .alert-success { color:#16a34a; background:#dcfce7; padding:10px; border-radius:6px; margin-bottom:15px; }
+        .btn-back { display:inline-block; margin-bottom:15px; color:#0b78a6; text-decoration:none; font-weight:600; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2><i class="fa-solid fa-calendar-plus"></i> Add Doctor Schedule & Room</h2>
+    <a href="admin-dashboard.php" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Back to Dashboard</a>
+    <h2><i class="fa-solid fa-calendar-plus"></i> Admin - Manage Doctor Schedules</h2>
 
     <?php if(isset($success)) echo "<div class='alert-success'>$success</div>"; ?>
 
@@ -122,7 +130,7 @@ $schedules = $conn->query("
         <button type="submit" name="add_schedule" class="btn-submit">Save Schedule</button>
     </form>
 
-    <h3 style="margin-top:40px; color:#333;">Existing Schedules</h3>
+    <h3 style="margin-top:40px; color:#333;">Existing Doctor Schedules</h3>
     <table>
         <thead>
             <tr>
