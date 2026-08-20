@@ -57,7 +57,7 @@ $result = $conn->query($sql);
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
 body { display: flex; background-color: #f4f7fe; color: #333; min-height: 100vh; }
 
-/* Sidebar */
+
 .sidebar { width: 260px; background: #0b78a6; color: #fff; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; }
 .sidebar .brand { font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 10px; margin-bottom: 30px; }
 .sidebar-menu { list-style: none; }
@@ -65,30 +65,27 @@ body { display: flex; background-color: #f4f7fe; color: #333; min-height: 100vh;
 .sidebar-menu a { display: flex; align-items: center; gap: 12px; color: #e0f2fe; text-decoration: none; padding: 12px 15px; border-radius: 8px; font-weight: 500; transition: 0.3s; }
 .sidebar-menu a:hover, .sidebar-menu a.active { background: rgba(255, 255, 255, 0.2); color: #fff; }
 
-/* Main Content */
+
 .main-content { flex: 1; padding: 30px; overflow-y: auto; }
 .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
 
-/* Card */
 .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
 
-/* Toolbar & Filters */
+
 .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .filter-btn { padding: 6px 14px; text-decoration: none; border-radius: 20px; font-size: 13px; font-weight: 500; background: #f1f5f9; color: #64748b; margin-left: 5px; }
 .filter-btn.active { background: #0b78a6; color: white; }
 
-/* Table */
 table { width: 100%; border-collapse: collapse; }
 th, td { padding: 12px; border-bottom: 1px solid #f1f5f9; text-align: left; font-size: 13px; }
 th { background: #f8fafc; color: #64748b; font-weight: 600; }
 
-/* Status Badges */
 .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-block; }
 .badge-pending { background: #fef3c7; color: #d97706; }
 .badge-confirmed { background: #dcfce7; color: #15803d; }
 .badge-cancelled { background: #fee2e2; color: #b91c1c; }
 
-/* Action Buttons */
+
 .btn-action { padding: 5px 10px; border-radius: 6px; text-decoration: none; font-size: 11px; font-weight: 600; margin-right: 3px; }
 .btn-confirm { background: #dcfce7; color: #166534; }
 .btn-confirm:hover { background: #166534; color: white; }
@@ -100,7 +97,7 @@ th { background: #f8fafc; color: #64748b; font-weight: 600; }
 </head>
 <body>
 
-    <!-- Sidebar Navigation -->
+    
     <div class="sidebar">
         <div>
             <div class="brand">
@@ -118,7 +115,7 @@ th { background: #f8fafc; color: #64748b; font-weight: 600; }
         </div>
     </div>
 
-    <!-- Main Content -->
+
     <div class="main-content">
         <div class="header">
             <h2>Manage Appointments</h2>
