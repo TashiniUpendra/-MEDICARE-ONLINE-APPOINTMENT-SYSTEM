@@ -1,4 +1,4 @@
-<?php
+ <?php
 session_start();
 include "db.php";
 
@@ -10,7 +10,7 @@ if (!isset($_SESSION["role"]) || $_SESSION["role"] !== "admin") {
 
 $msg = "";
 
-/* DELETE PATIENT */
+
 if (isset($_GET["delete"])) {
     $id = intval($_GET["delete"]);
     
@@ -22,7 +22,7 @@ if (isset($_GET["delete"])) {
     $delStmt->close();
 }
 
-/* SEARCH & FETCH PATIENTS */
+
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 
 if (!empty($search)) {
@@ -43,7 +43,7 @@ if (!empty($search)) {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MediCare | Patient Records</title>
 
-<!-- FontAwesome Icons & Google Fonts -->
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
@@ -51,7 +51,6 @@ if (!empty($search)) {
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
 body { display: flex; background-color: #f4f7fe; color: #333; min-height: 100vh; }
 
-/* Sidebar */
 .sidebar { width: 260px; background: #0b78a6; color: #fff; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; }
 .sidebar .brand { font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 10px; margin-bottom: 30px; }
 .sidebar-menu { list-style: none; }
@@ -59,20 +58,16 @@ body { display: flex; background-color: #f4f7fe; color: #333; min-height: 100vh;
 .sidebar-menu a { display: flex; align-items: center; gap: 12px; color: #e0f2fe; text-decoration: none; padding: 12px 15px; border-radius: 8px; font-weight: 500; transition: 0.3s; }
 .sidebar-menu a:hover, .sidebar-menu a.active { background: rgba(255, 255, 255, 0.2); color: #fff; }
 
-/* Main Content */
 .main-content { flex: 1; padding: 30px; overflow-y: auto; }
 .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
 
-/* Card */
 .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
 
-/* Search Bar */
 .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .search-box { display: flex; gap: 10px; }
 .search-box input { padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; outline: none; width: 250px; }
 .search-box button { padding: 8px 15px; background: #0b78a6; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; }
 
-/* Table */
 table { width: 100%; border-collapse: collapse; }
 th, td { padding: 12px; border-bottom: 1px solid #f1f5f9; text-align: left; font-size: 13px; }
 th { background: #f8fafc; color: #64748b; font-weight: 600; }
