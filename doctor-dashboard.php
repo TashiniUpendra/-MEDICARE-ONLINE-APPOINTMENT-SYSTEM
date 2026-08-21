@@ -46,8 +46,8 @@ $total_appointments = $conn->query("SELECT COUNT(*) as count FROM appointments W
 $today_appointments = $conn->query("SELECT COUNT(*) as count FROM appointments WHERE doctor_id = '$doctor_id' AND DATE(appointment_date) = CURDATE()")->fetch_assoc()['count'] ?? 0;
 $pending_requests   = $conn->query("SELECT COUNT(*) as count FROM appointments WHERE doctor_id = '$doctor_id' AND status = 'Pending'")->fetch_assoc()['count'] ?? 0;
 
-/* Fetch Recent/Upcoming Appointments List */
-$appointments_query = "SELECT a.*, u.name as patient_name, u.phone as patient_phone 
+/* Fetch Recent/Upcoming Appointments List (Fixed: Replaced u.phone with u.email) */
+$appointments_query = "SELECT a.*, u.name as patient_name, u.email as patient_email 
                        FROM appointments a 
                        JOIN users u ON a.user_id = u.id 
                        WHERE a.doctor_id = ? 
@@ -194,7 +194,7 @@ $appointments = $app_stmt->get_result();
         <div class="welcome-card d-flex align-items-center justify-content-between">
             <div>
                 <h2 class="fw-bold mb-1">Welcome back, Dr. <?php echo htmlspecialchars($doc_name); ?>! 👋</h2>
-                <p class="text-secondary m-0" style="color: #94a3b8 !important;">Here is a overview of your patient appointments and schedules today.</p>
+                <p class="text-secondary m-0" style="color: #94a3b8 !important;">Here is an overview of your patient appointments and schedules today.</p>
             </div>
             <a href="doctor-profile.php" class="btn btn-info text-white fw-bold rounded-3 px-4 py-2">Edit Profile</a>
         </div>
@@ -250,7 +250,7 @@ $appointments = $app_stmt->get_result();
                         <tr>
                             <th>#</th>
                             <th>Patient Name</th>
-                            <th>Phone</th>
+                            <th>Patient Email</th>
                             <th>Date & Time</th>
                             <th>Status</th>
                             <th class="text-center">Action</th>
@@ -262,7 +262,7 @@ $appointments = $app_stmt->get_result();
                                 <tr>
                                     <td><?php echo $count++; ?></td>
                                     <td class="fw-semibold"><?php echo htmlspecialchars($row['patient_name']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['patient_phone']); ?></td>
+                                    <td><?php echo htmlspecialchars($row['patient_email']); ?></td>
                                     <td>
                                         <i class="bi bi-calendar3 me-1 text-muted"></i>
                                         <?php echo date('Y-m-d', strtotime($row['appointment_date'])); ?> 
