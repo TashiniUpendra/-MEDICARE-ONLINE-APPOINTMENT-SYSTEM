@@ -7,102 +7,50 @@ if (!isset($_SESSION["role"]) || $_SESSION["role"] !== "patient") {
     exit();
 }
 
-$patientEmail = $_SESSION["email"] ?? "";
-$patientId    = $_SESSION["id"] ?? 0;
+$patient_id = $_SESSION["user_id"] ?? $_SESSION["id"];
 
-/* Fetch Appointments */
-$query = "SELECT * FROM appointments WHERE patient_id = '$patientId' OR patient_email = '$patientEmail' ORDER BY id DESC";
-$result = mysqli_query($conn, $query);
+// Fetch Appointments with actual Doctor Name using JOIN
+$query = "SELECT a.id, a.appointment_date, a.appointment_time, a.reason, a.status, u.name as doctor_name 
+          FROM appointments a 
+          JOIN users u ON a.doctor_id = u.id 
+          WHERE a.patient_id = '$patient_id' 
+          ORDER BY a.id DESC";
+
+$result = $conn->query($query);
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>MediCare | My Appointments</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-<style>
-body { background: #f0f8ff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-.sidebar { width: 250px; position: fixed; top: 0; bottom: 0; background: #0b78a6; color: white; padding-top: 20px; }
-.sidebar a { padding: 12px 25px; color: white; text-decoration: none; display: block; font-weight: 500; }
-.sidebar a:hover, .sidebar a.active { background: #085a7d; }
-.main-content { margin-left: 250px; padding: 30px; }
-.card-custom { background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-.badge-pending { background: #ffeeba; color: #856404; }
-.badge-confirmed { background: #d4edda; color: #155724; }
-</style>
-</head>
-<body>
-
-<div class="sidebar">
-    <h3 class="text-center fw-bold mb-4">MediCare</h3>
-    <a href="patient-dashboard.php"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
-    <a href="appointment-booking.php"><i class="bi bi-calendar-plus me-2"></i> Book Appointment</a>
-    <a href="appointment-history.php" class="active"><i class="bi bi-calendar-check me-2"></i> My Appointments</a>
-    <a href="logout.php"><i class="bi bi-box-arrow-right me-2"></i> Logout</a>
-</div>
-
-<div class="main-content">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>My Appointments</h2>
-        <a href="appointment-booking.php" class="btn btn-primary" style="background:#0b78a6;"><i class="bi bi-plus-lg me-1"></i> Book New Appointment</a>
-    </div>
-
-    <div class="card-custom">
-        <?php if(isset($_GET['success'])): ?>
-            <div class="alert alert-success alert-dismissible fade show">
-                Appointment booked successfully!
-            </div>
-        <?php endif; ?>
-
-        <?php if ($result && mysqli_num_rows($result) > 0): ?>
-            <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Appointment ID</th>
-                            <th>Doctor</th>
-                            <th>Date</th>
-                            <th>Time</th>
-                            <th>Reason</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php 
-                        while($row = mysqli_fetch_assoc($result)): 
-                            $status = $row['status'] ?? 'Pending';
-                            $badgeClass = ($status == 'Confirmed') ? 'badge-confirmed' : 'badge-pending';
-                            
-                            // Doctor Name Formatting (Dr. duplicate වෙන එක නවත්වයි)
-                            $docName = $row['doctor_name'] ?? 'Doctor';
-                            if (strpos(strtolower($docName), 'dr.') === false) {
-                                $docName = "Dr. " . $docName;
-                            }
-                        ?>
-                        <tr>
-                            <td class="fw-bold">#<?php echo $row['id']; ?></td>
-                            <td><?php echo htmlspecialchars($docName); ?></td>
-                            <td><i class="bi bi-calendar-event me-1 text-primary"></i><?php echo htmlspecialchars($row['appointment_date']); ?></td>
-                            <td><i class="bi bi-clock me-1 text-info"></i><?php echo htmlspecialchars($row['appointment_time']); ?></td>
-                            <td><?php echo htmlspecialchars($row['reason']); ?></td>
-                            <td><span class="badge <?php echo $badgeClass; ?>"><?php echo htmlspecialchars($status); ?></span></td>
-                        </tr>
-                        <?php endwhile; ?>
-                    </tbody>
-                </table>
-            </div>
-        <?php else: ?>
-            <div class="text-center py-5">
-                <i class="bi bi-calendar-x text-muted" style="font-size: 3rem;"></i>
-                <h4 class="mt-3">No appointments found</h4>
-                <p class="text-muted">You haven't booked any appointments yet.</p>
-                <a href="appointment-booking.php" class="btn btn-primary" style="background:#0b78a6;">Book Your First Appointment</a>
-            </div>
-        <?php endif; ?>
-    </div>
-</div>
-
-</body>
-</html>
+<!-- HTML Display Table Inside Page -->
+<table class="table">
+    <thead>
+        <tr>
+            <th>Appointment ID</th>
+            <th>Doctor</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Reason</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php while($row = $result->fetch_assoc()): ?>
+        <tr>
+            <td>#<?php echo $row['id']; ?></td>
+            <!-- Real Doctor Name -->
+            <td>Dr. <?php echo htmlspecialchars($row['doctor_name']); ?></td> 
+            <td><i class="fa-regular fa-calendar"></i> <?php echo $row['appointment_date']; ?></td>
+            <td><i class="fa-regular fa-clock"></i> <?php echo $row['appointment_time']; ?></td>
+            <td><?php echo htmlspecialchars($row['reason']); ?></td>
+            <td>
+                <!-- Dynamic Status Colors -->
+                <?php if(strtolower($row['status']) == 'confirmed'): ?>
+                    <span class="badge bg-success" style="background:#dcfce7; color:#15803d; padding:4px 10px; border-radius:12px; font-weight:600;">Confirmed</span>
+                <?php elseif(strtolower($row['status']) == 'cancelled'): ?>
+                    <span class="badge bg-danger" style="background:#fee2e2; color:#b91c1c; padding:4px 10px; border-radius:12px; font-weight:600;">Cancelled</span>
+                <?php else: ?>
+                    <span class="badge bg-warning" style="background:#fef3c7; color:#b45309; padding:4px 10px; border-radius:12px; font-weight:600;">Pending</span>
+                <?php endif; ?>
+            </td>
+        </tr>
+        <?php endwhile; ?>
+    </tbody>
+</table>
