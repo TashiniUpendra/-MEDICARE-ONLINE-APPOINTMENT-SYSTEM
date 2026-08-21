@@ -35,10 +35,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['book_appointment'])) {
 
         if ($stmt->execute()) {
             $appointment_id = $stmt->insert_id;
-            $success = "Appointment booked successfully! Pending confirmation.";
 
             // 1. Patient ට Notification එකක් එකතු කිරීම
-            $notif_patient = "Your appointment (#$appointment_id) has been submitted successfully and is pending confirmation.";
+            $notif_patient = "Your appointment (#$appointment_id) has been submitted. Please complete your payment to confirm.";
             $n1 = $conn->prepare("INSERT INTO notifications (user_id, message) VALUES (?, ?)");
             $n1->bind_param("is", $patient_id, $notif_patient);
             $n1->execute();
@@ -48,6 +47,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['book_appointment'])) {
             $n2 = $conn->prepare("INSERT INTO notifications (user_id, message) VALUES (?, ?)");
             $n2->bind_param("is", $doctor_id, $notif_doc);
             $n2->execute();
+
+            // 3. Payment Page එකට Direct කිරීම
+            header("Location: payment.php?appointment_id=" . $appointment_id);
+            exit();
         } else {
             $error = "Error booking appointment: " . $conn->error;
         }
@@ -141,7 +144,7 @@ $doctors = $conn->query("SELECT id, name, specialization FROM users WHERE role =
             <p><i class="fa-solid fa-money-bill-wave"></i> <strong>Doctor Fee:</strong> LKR <span id="disp_fee"></span></p>
         </div>
 
-        <button type="submit" name="book_appointment" class="btn-submit"><i class="fa-solid fa-paper-plane"></i> Confirm Booking</button>
+        <button type="submit" name="book_appointment" class="btn-submit"><i class="fa-solid fa-credit-card"></i> Proceed to Payment</button>
     </form>
 </div>
 
