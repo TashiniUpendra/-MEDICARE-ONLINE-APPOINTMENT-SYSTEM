@@ -15,7 +15,7 @@ $user_id    = $_SESSION["id"] ?? $_SESSION["user_id"] ?? 0;
 $message = "";
 $msg_type = "";
 
-/* Role එක අනුව Dynamic Dashboard Link එක */
+/* Dynamic Dashboard Link */
 $dashboard_link = "patient-dashboard.php"; 
 if ($user_role === 'admin') {
     $dashboard_link = "admin-dashboard.php";
@@ -23,7 +23,7 @@ if ($user_role === 'admin') {
     $dashboard_link = "doctor-dashboard.php";
 }
 
-/* Handle Payment Status Update (Admin / Doctor Only) */
+/* Handle Payment Status Update */
 if (isset($_GET['action']) && $_GET['action'] === 'update_payment' && isset($_GET['id'])) {
     if ($user_role === 'admin' || $user_role === 'doctor') {
         $app_id = intval($_GET['id']);
@@ -42,18 +42,28 @@ if (isset($_GET['action']) && $_GET['action'] === 'update_payment' && isset($_GE
     }
 }
 
-/* Fetch Appointments Based on Role */
+/* 
+  SQL Query based on exact columns:
+  a.doctor_name, a.patient_name, a.patient_email, a.doctor_id, a.patient_id
+*/
+$base_query = "SELECT a.*, 
+                      IF(a.doctor_name IS NOT NULL AND a.doctor_name != '', a.doctor_name, COALESCE(d.name, 'Dr. Assigned')) AS doc_fullname,
+                      IF(a.patient_name IS NOT NULL AND a.patient_name != '', a.patient_name, COALESCE(u.name, 'Patient')) AS pat_fullname
+               FROM appointments a
+               LEFT JOIN doctors d ON a.doctor_id = d.id
+               LEFT JOIN users u ON (a.patient_id = u.id OR a.patient_email = u.email)";
+
 if ($user_role === 'admin') {
-    $sql = "SELECT * FROM appointments ORDER BY id DESC";
+    $sql = $base_query . " ORDER BY a.id DESC";
     $stmt = $conn->prepare($sql);
 } elseif ($user_role === 'doctor') {
-    $sql = "SELECT * FROM appointments WHERE doctor_name = (SELECT name FROM doctors WHERE email = ?) OR doctor_id = ? ORDER BY id DESC";
+    $sql = $base_query . " WHERE a.doctor_id = ? OR d.email = ? ORDER BY a.id DESC";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("si", $user_email, $user_id);
+    $stmt->bind_param("is", $user_id, $user_email);
 } else {
-    $sql = "SELECT * FROM appointments WHERE patient_email = ? ORDER BY id DESC";
+    $sql = $base_query . " WHERE a.patient_id = ? OR a.patient_email = ? ORDER BY a.id DESC";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $user_email);
+    $stmt->bind_param("is", $user_id, $user_email);
 }
 
 $stmt->execute();
@@ -175,23 +185,23 @@ $result = $stmt->get_result();
                                 <tr>
                                     <td><strong>#<?php echo $row['id']; ?></strong></td>
                                     <td>
-                                        <div class="fw-bold text-dark"><?php echo htmlspecialchars($row['doctor_name'] ?? 'N/A'); ?></div>
+                                        <div class="fw-bold text-dark"><?php echo htmlspecialchars($row['doc_fullname']); ?></div>
                                     </td>
                                     <td>
-                                        <div class="fw-bold text-dark">
-                                            <?php echo htmlspecialchars($row['patient_name'] ?? $row['name'] ?? 'N/A'); ?>
-                                        </div>
-                                        <small class="text-muted"><?php echo htmlspecialchars($row['patient_email'] ?? 'No Email'); ?></small>
+                                        <div class="fw-bold text-dark"><?php echo htmlspecialchars($row['pat_fullname']); ?></div>
+                                        <?php if(!empty($row['patient_email'])): ?>
+                                            <small class="text-muted"><?php echo htmlspecialchars($row['patient_email']); ?></small>
+                                        <?php endif; ?>
                                     </td>
                                     <td>
-                                        <div><i class="bi bi-calendar3 me-1"></i><?php echo htmlspecialchars($row['appointment_date']); ?></div>
-                                        <small class="text-muted"><i class="bi bi-clock me-1"></i><?php echo htmlspecialchars($row['appointment_time']); ?></small>
+                                        <div><i class="bi bi-calendar3 me-1"></i><?php echo htmlspecialchars($row['appointment_date'] ?? 'N/A'); ?></div>
+                                        <small class="text-muted"><i class="bi bi-clock me-1"></i><?php echo htmlspecialchars($row['appointment_time'] ?? 'N/A'); ?></small>
                                     </td>
                                     <td>
-                                        <span class="badge bg-light text-dark border"><?php echo htmlspecialchars($row['room_no'] ?: 'Not Set'); ?></span>
+                                        <span class="badge bg-light text-dark border"><?php echo htmlspecialchars($row['room_no'] ?? 'Not Set'); ?></span>
                                     </td>
                                     <td>
-                                        <span class="badge bg-info text-dark"><?php echo htmlspecialchars($row['status']); ?></span>
+                                        <span class="badge bg-info text-dark"><?php echo htmlspecialchars($row['status'] ?? 'Pending'); ?></span>
                                     </td>
                                     <td>
                                         <?php if (($row['payment_status'] ?? 'Pending') === 'Paid'): ?>
