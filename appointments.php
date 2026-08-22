@@ -15,8 +15,8 @@ $user_id    = $_SESSION["id"] ?? $_SESSION["user_id"] ?? 0;
 $message = "";
 $msg_type = "";
 
-/* Role එක අනුව Dynamic Dashboard Link එක තීරණය කිරීම */
-$dashboard_link = "patient-dashboard.php"; // Default
+/* Role එක අනුව Dynamic Dashboard Link එක */
+$dashboard_link = "patient-dashboard.php"; 
 if ($user_role === 'admin') {
     $dashboard_link = "admin-dashboard.php";
 } elseif ($user_role === 'doctor') {
@@ -120,7 +120,6 @@ $result = $stmt->get_result();
     <div class="sidebar">
         <div class="brand-title"><i class="bi bi-hospital-fill"></i> MediCare</div>
         <div class="nav-menu">
-            <!-- Dynamic Dashboard Link based on Role -->
             <a href="<?php echo $dashboard_link; ?>" class="nav-item-link">
                 <i class="bi bi-grid-1x2-fill"></i> Dashboard
             </a>
@@ -129,7 +128,6 @@ $result = $stmt->get_result();
                 <i class="bi bi-calendar2-check-fill"></i> Appointments
             </a>
 
-            <!-- Admin හට පමණක් පෙනෙන වෙනත් links තිබේ නම් මෙහි එකතු කළ හැක -->
             <?php if ($user_role === 'admin'): ?>
                 <a href="doctors.php" class="nav-item-link">
                     <i class="bi bi-person-badge-fill"></i> Doctors
@@ -171,7 +169,7 @@ $result = $stmt->get_result();
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if ($result->num_rows > 0): ?>
+                        <?php if ($result && $result->num_rows > 0): ?>
                             <?php while ($row = $result->fetch_assoc()): ?>
                                 <tr>
                                     <td><strong>#<?php echo $row['id']; ?></strong></td>
@@ -202,12 +200,13 @@ $result = $stmt->get_result();
                                                 <a href="appointments.php?action=update_payment&id=<?php echo $row['id']; ?>&status=Paid" 
                                                    class="btn btn-sm btn-outline-success fw-bold"
                                                    onclick="return confirm('Mark this appointment payment as Paid?');">
-                                                    <i class="bi bi-cash-stack me-1"></i> Mark as Paid
+                                                    <i class="bi bi-check-circle me-1"></i> Mark as Paid
                                                 </a>
                                             <?php else: ?>
                                                 <a href="appointments.php?action=update_payment&id=<?php echo $row['id']; ?>&status=Pending" 
-                                                   class="btn btn-sm btn-link text-muted p-0 text-decoration-none">
-                                                    Mark Unpaid
+                                                   class="btn btn-sm btn-outline-secondary fw-bold"
+                                                   onclick="return confirm('Change payment status back to Pending?');">
+                                                    <i class="bi bi-arrow-counterclockwise me-1"></i> Mark Unpaid
                                                 </a>
                                             <?php endif; ?>
                                         <?php elseif ($user_role === 'patient' && ($row['payment_status'] ?? 'Pending') !== 'Paid'): ?>
