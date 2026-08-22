@@ -160,7 +160,8 @@ $result = $stmt->get_result();
                     <thead class="table-light">
                         <tr>
                             <th>#ID</th>
-                            <th>Doctor / Patient</th>
+                            <th>Doctor</th>
+                            <th>Patient</th>
                             <th>Date & Time</th>
                             <th>Room No</th>
                             <th>Status</th>
@@ -174,8 +175,13 @@ $result = $stmt->get_result();
                                 <tr>
                                     <td><strong>#<?php echo $row['id']; ?></strong></td>
                                     <td>
-                                        <div class="fw-bold text-dark"><?php echo htmlspecialchars($row['doctor_name'] ?: 'N/A'); ?></div>
-                                        <small class="text-muted"><?php echo htmlspecialchars($row['patient_email'] ?: 'No Email'); ?></small>
+                                        <div class="fw-bold text-dark"><?php echo htmlspecialchars($row['doctor_name'] ?? 'N/A'); ?></div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold text-dark">
+                                            <?php echo htmlspecialchars($row['patient_name'] ?? $row['name'] ?? 'N/A'); ?>
+                                        </div>
+                                        <small class="text-muted"><?php echo htmlspecialchars($row['patient_email'] ?? 'No Email'); ?></small>
                                     </td>
                                     <td>
                                         <div><i class="bi bi-calendar3 me-1"></i><?php echo htmlspecialchars($row['appointment_date']); ?></div>
@@ -219,7 +225,7 @@ $result = $stmt->get_result();
                             <?php endwhile; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="7" class="text-center py-4 text-muted">No appointments found.</td>
+                                <td colspan="8" class="text-center py-4 text-muted">No appointments found.</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
