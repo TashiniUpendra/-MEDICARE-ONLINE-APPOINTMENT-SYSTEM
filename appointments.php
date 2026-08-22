@@ -15,6 +15,14 @@ $user_id    = $_SESSION["id"] ?? $_SESSION["user_id"] ?? 0;
 $message = "";
 $msg_type = "";
 
+/* Role එක අනුව Dynamic Dashboard Link එක තීරණය කිරීම */
+$dashboard_link = "patient-dashboard.php"; // Default
+if ($user_role === 'admin') {
+    $dashboard_link = "admin-dashboard.php";
+} elseif ($user_role === 'doctor') {
+    $dashboard_link = "doctor-dashboard.php";
+}
+
 /* Handle Payment Status Update (Admin / Doctor Only) */
 if (isset($_GET['action']) && $_GET['action'] === 'update_payment' && isset($_GET['id'])) {
     if ($user_role === 'admin' || $user_role === 'doctor') {
@@ -36,16 +44,13 @@ if (isset($_GET['action']) && $_GET['action'] === 'update_payment' && isset($_GE
 
 /* Fetch Appointments Based on Role */
 if ($user_role === 'admin') {
-    // Admin sees all appointments
     $sql = "SELECT * FROM appointments ORDER BY id DESC";
     $stmt = $conn->prepare($sql);
 } elseif ($user_role === 'doctor') {
-    // Doctor sees appointments assigned to them
     $sql = "SELECT * FROM appointments WHERE doctor_name = (SELECT name FROM doctors WHERE email = ?) OR doctor_id = ? ORDER BY id DESC";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("si", $user_email, $user_id);
 } else {
-    // Patient sees their own appointments
     $sql = "SELECT * FROM appointments WHERE patient_email = ? ORDER BY id DESC";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $user_email);
@@ -111,24 +116,36 @@ $result = $stmt->get_result();
 <body>
 
 <div class="wrapper">
+    <!-- Sidebar -->
     <div class="sidebar">
         <div class="brand-title"><i class="bi bi-hospital-fill"></i> MediCare</div>
         <div class="nav-menu">
-            <a href="doctor-dashboard.php" class="nav-item-link">
+            <!-- Dynamic Dashboard Link based on Role -->
+            <a href="<?php echo $dashboard_link; ?>" class="nav-item-link">
                 <i class="bi bi-grid-1x2-fill"></i> Dashboard
             </a>
+            
             <a href="appointments.php" class="nav-item-link active">
                 <i class="bi bi-calendar2-check-fill"></i> Appointments
             </a>
-            <a href="profile.php" class="nav-item-link">
-                <i class="bi bi-person-badge-fill"></i> Profile
-            </a>
+
+            <!-- Admin හට පමණක් පෙනෙන වෙනත් links තිබේ නම් මෙහි එකතු කළ හැක -->
+            <?php if ($user_role === 'admin'): ?>
+                <a href="doctors.php" class="nav-item-link">
+                    <i class="bi bi-person-badge-fill"></i> Doctors
+                </a>
+            <?php else: ?>
+                <a href="profile.php" class="nav-item-link">
+                    <i class="bi bi-person-badge-fill"></i> Profile
+                </a>
+            <?php endif; ?>
         </div>
         <a href="logout.php" class="nav-item-link logout-link">
             <i class="bi bi-box-arrow-left"></i> Logout
         </a>
     </div>
 
+    <!-- Main Content -->
     <div class="main-content">
         <h1 class="page-title">Manage Appointments</h1>
 
