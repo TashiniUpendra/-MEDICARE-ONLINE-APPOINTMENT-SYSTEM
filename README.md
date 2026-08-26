@@ -37,6 +37,6 @@ MediCare is a web-based healthcare management system designed to streamline doct
 
 1. **Clone or Download the Repository**
    ```bash
-   git clone [https://github.com/TashiniUpendra/-MEDICARE-ONLINE-APPOINTMENT-SYSTEM.git](https://github.com/TashiniUpendra/-MEDICARE-ONLINE-APPOINTMENT-SYSTEM.git)
-<img width="1360" height="1524" alt="image" src="https://www.shutterstock.com/image-vector/online-doctor-appointment-booking-system-260nw-2655423645.jpg" />
-
+  <p align="center">
+  <img src="https://images.unsplash.com/photo-1505751172876-fa1923c5c528?q=80&w=1200&auto=format&fit=crop" alt="MediCare Header Banner" width="100%" style="border-radius: 12px;">
+</p>
