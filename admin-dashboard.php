@@ -10,13 +10,11 @@ if (!isset($_SESSION["role"]) || $_SESSION["role"] !== "admin") {
 
 $admin_name = $_SESSION["name"] ?? "Admin";
 
-// Dynamic Data Fetching
 $total_doctors = $conn->query("SELECT COUNT(*) as count FROM users WHERE role='doctor'")->fetch_assoc()['count'] ?? 0;
 $total_patients = $conn->query("SELECT COUNT(*) as count FROM users WHERE role='patient'")->fetch_assoc()['count'] ?? 0;
 $total_appointments = $conn->query("SELECT COUNT(*) as count FROM appointments")->fetch_assoc()['count'] ?? 0;
 $pending_appointments = $conn->query("SELECT COUNT(*) as count FROM appointments WHERE status='Pending'")->fetch_assoc()['count'] ?? 0;
 
-// Fetch Recent Appointments
 $recent_sql = "SELECT a.*, u.name AS patient_name, d.name AS doctor_name 
               FROM appointments a
               JOIN users u ON a.patient_id = u.id
@@ -40,7 +38,6 @@ $recent_result = $conn->query($recent_sql);
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
 body { display: flex; background-color: #f4f7fe; color: #333; min-height: 100vh; }
 
-/* Sidebar Style */
 .sidebar { width: 260px; background: #0b78a6; color: #fff; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; }
 .sidebar .brand { font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 10px; margin-bottom: 30px; }
 .sidebar-menu { list-style: none; }
@@ -48,17 +45,14 @@ body { display: flex; background-color: #f4f7fe; color: #333; min-height: 100vh;
 .sidebar-menu a { display: flex; align-items: center; gap: 12px; color: #e0f2fe; text-decoration: none; padding: 12px 15px; border-radius: 8px; font-weight: 500; transition: 0.3s; }
 .sidebar-menu a:hover, .sidebar-menu a.active { background: rgba(255, 255, 255, 0.2); color: #fff; }
 
-/* Main Content */
 .main-content { flex: 1; padding: 30px; overflow-y: auto; }
 
-/* Header */
 .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
 .user-info { display: flex; align-items: center; gap: 15px; }
 .user-info i { font-size: 24px; color: #0b78a6; background: #e0f2fe; padding: 10px; border-radius: 50%; }
 .logout-btn { background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; text-decoration: none; font-weight: 500; }
 .logout-btn:hover { background: #dc2626; }
 
-/* Dashboard Cards */
 .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; }
 .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); display: flex; align-items: center; justify-content: space-between; }
 .card-info h3 { font-size: 28px; font-weight: 700; color: #1e293b; }
@@ -69,7 +63,6 @@ body { display: flex; background-color: #f4f7fe; color: #333; min-height: 100vh;
 .icon-purple { background: #f3e8ff; color: #9333ea; }
 .icon-orange { background: #ffedd5; color: #ea580c; }
 
-/* Table Section */
 .table-container { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
 .table-container h3 { margin-bottom: 15px; color: #1e293b; }
 table { width: 100%; border-collapse: collapse; text-align: left; }
@@ -83,7 +76,7 @@ th { background: #f8fafc; color: #64748b; font-weight: 600; }
 </head>
 <body>
 
-    <!-- Sidebar -->
+    
     <div class="sidebar">
         <div>
             <div class="brand">
@@ -160,7 +153,7 @@ th { background: #f8fafc; color: #64748b; font-weight: 600; }
             </div>
         </div>
 
-        <!-- Recent Appointments Table -->
+        
         <div class="table-container">
             <h3>Recent Appointment Requests</h3>
             <table>
