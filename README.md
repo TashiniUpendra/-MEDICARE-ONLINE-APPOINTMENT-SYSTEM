@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="https://i.pinimg.com/736x/01/29/e5/0129e5a1b3be0cbf7ed18b28ef1c2f92.jpg" alt="MediCare Doctor Global Banner" width="100%" style="border-radius: 12px;">
-</p>
-
 # 🏥 MediCare - Online Appointment System
 
 MediCare is a web-based healthcare management system designed to streamline doctor appointment booking, patient details tracking, and schedule management for patients, doctors, and system administrators.
