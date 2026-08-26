@@ -37,6 +37,4 @@ MediCare is a web-based healthcare management system designed to streamline doct
 
 1. **Clone or Download the Repository**
    ```bash
-  <p align="center">
-  <img src="https://images.unsplash.com/photo-1505751172876-fa1923c5c528?q=80&w=1200&auto=format&fit=crop" alt="MediCare Header Banner" width="100%" style="border-radius: 12px;">
-</p>
+ ![MediCare Dashboard Preview](https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?q=80&w=1200&auto=format&fit=crop)
