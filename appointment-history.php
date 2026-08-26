@@ -32,13 +32,11 @@ $result = $conn->query($query);
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { background: #f4f7fe; display: flex; min-height: 100vh; }
 
-        /* Sidebar Styling */
         .sidebar { width: 260px; background: #0b78a6; color: white; padding: 30px 20px; display: flex; flex-direction: column; justify-content: space-between; }
         .sidebar h2 { font-size: 24px; font-weight: 700; margin-bottom: 40px; }
         .sidebar nav a { display: flex; align-items: center; gap: 12px; color: rgba(255,255,255,0.8); text-decoration: none; padding: 12px 16px; border-radius: 8px; margin-bottom: 10px; font-weight: 500; font-size: 15px; transition: 0.3s; }
         .sidebar nav a:hover, .sidebar nav a.active { background: rgba(255,255,255,0.15); color: white; }
 
-        /* Main Content Area */
         .main-content { flex: 1; padding: 40px; }
         .header-action { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
         .header-action h1 { font-size: 28px; color: #1e293b; font-weight: 700; }
@@ -46,7 +44,6 @@ $result = $conn->query($query);
         .btn-book { background: #0b78a6; color: white; text-decoration: none; padding: 12px 20px; border-radius: 8px; font-weight: 600; font-size: 14px; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; }
         .btn-book:hover { background: #085a7d; }
 
-        /* Table Card Container */
         .table-card { background: white; border-radius: 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); padding: 25px; border: 1px solid #e2e8f0; }
         
         table { width: 100%; border-collapse: collapse; text-align: left; }
@@ -54,7 +51,6 @@ $result = $conn->query($query);
         td { padding: 18px 16px; font-size: 14px; color: #334155; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
         tr:last-child td { border-bottom: none; }
 
-        /* Badges */
         .badge { display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: capitalize; }
         .badge-pending { background: #fef3c7; color: #d97706; }
         .badge-confirmed { background: #dcfce7; color: #15803d; }
