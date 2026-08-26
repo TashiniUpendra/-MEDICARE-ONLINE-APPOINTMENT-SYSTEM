@@ -1,6 +1,5 @@
 <p align="center">
-  <!-- මෙතැනට ඔයා Drop කරපු Image Link එක දාන්න -->
-  ![MediCare Banner](ඔයා_Upload_කරපු_Link_එක_මෙතැනට_Paste_කරන්න) 
+  <img src="https://i.pinimg.com/736x/01/29/e5/0129e5a1b3be0cbf7ed18b28ef1c2f92.jpg" alt="MediCare Doctor Global Banner" width="100%" style="border-radius: 12px;">
 </p>
 
 # 🏥 MediCare - Online Appointment System
