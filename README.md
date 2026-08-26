@@ -1,3 +1,8 @@
+<p align="center">
+  <!-- මෙතැනට ඔයා Drop කරපු Image Link එක දාන්න -->
+  ![MediCare Banner](ඔයා_Upload_කරපු_Link_එක_මෙතැනට_Paste_කරන්න) 
+</p>
+
 # 🏥 MediCare - Online Appointment System
 
 MediCare is a web-based healthcare management system designed to streamline doctor appointment booking, patient details tracking, and schedule management for patients, doctors, and system administrators.
@@ -37,6 +42,4 @@ MediCare is a web-based healthcare management system designed to streamline doct
 
 1. **Clone or Download the Repository**
    ```bash
- <p align="center">
-  <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=1200&auto=format&fit=crop" alt="MediCare Global Health Header" width="100%" style="border-radius: 12px;">
-</p>
+   git clone [https://github.com/TashiniUpendra/-MEDICARE-ONLINE-APPOINTMENT-SYSTEM.git](https://github.com/TashiniUpendra/-MEDICARE-ONLINE-APPOINTMENT-SYSTEM.git)
